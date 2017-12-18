@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +19,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,6 +44,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -59,8 +66,11 @@ public class MainActivity extends AppCompatActivity
     private Location lastLocation;
 
     private TextView textLat, textLong;
+    private TextView inTime;
+    private Button checkInButton,checkOutButton;
 
     private MapFragment mapFragment;
+    Date checkInTime,checkOutTime;
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
     // Create a Intent send by the notification
@@ -76,12 +86,35 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         textLat = (TextView) findViewById(R.id.lat);
         textLong = (TextView) findViewById(R.id.lon);
-
+        checkInButton=(Button) findViewById(R.id.bt_checkin);
+        checkOutButton=(Button)findViewById(R.id.bt_checkout);
+        inTime=(TextView)findViewById(R.id.tv_checkintime) ;
         // initialize GoogleMaps
         initGMaps();
 
         // create GoogleApiClient
         createGoogleApi();
+
+        checkInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                Calendar cal = Calendar.getInstance();
+                System.out.println("time => " + dateFormat.format(cal.getTime()));
+                inTime.setText(dateFormat.format(cal.getTime()));
+                CountDownTimer timer=new CountDownTimer(cal) {
+                    @Override
+                    public void onTick(long l) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                }
+            }
+        });
     }
 
     // Create GoogleApiClient instance
@@ -334,6 +367,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final long GEO_DURATION = 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
+    //Radius draw for the selected location
     private static final float GEOFENCE_RADIUS = 500.0f; // in meters
 
     // Create a Geofence
@@ -385,11 +419,12 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "onResult: " + status);
         if ( status.isSuccess() ) {
 
+            saveGeofence();
+            drawGeofence();
         } else {
             // inform about fail
             System.out.println("MainActivity.onResult--"+status.isSuccess());
-            saveGeofence();
-            drawGeofence();
+
         }
     }
 

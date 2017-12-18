@@ -11,6 +11,8 @@ import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
@@ -25,6 +27,7 @@ public class GeofenceTrasitionService extends IntentService {
     private static final String TAG = GeofenceTrasitionService.class.getSimpleName();
 
     public static final int GEOFENCE_NOTIFICATION_ID = 0;
+
 
     public GeofenceTrasitionService() {
         super(TAG);
@@ -91,6 +94,8 @@ public class GeofenceTrasitionService extends IntentService {
                 createNotification(msg, notificationPendingIntent));
 
     }
+
+
 
     // Create notification
     private Notification createNotification(String msg, PendingIntent notificationPendingIntent) {
