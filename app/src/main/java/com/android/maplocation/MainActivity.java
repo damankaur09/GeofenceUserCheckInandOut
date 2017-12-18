@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -61,12 +63,20 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    //handler for timer
+    private Handler customHandler = new Handler();
+    long timeInMilliseconds = 0L;
+    long timeSwapBuff = 0L;
+    long updatedTime = 0L;
+    private long startTime = 0L;
+    private long stopTime = 0L;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
     private TextView textLat, textLong;
     private TextView inTime;
+    private TextView tvTimer;
     private Button checkInButton,checkOutButton;
 
     private MapFragment mapFragment;
@@ -80,6 +90,32 @@ public class MainActivity extends AppCompatActivity
         return intent;
     }
 
+    // add timer
+
+    private Runnable updateTimerThread=new Runnable() {
+        @Override
+        public void run() {
+            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            updatedTime = timeSwapBuff + timeInMilliseconds;
+
+            int secs = (int) (updatedTime / 1000);
+            int mins = secs / 60;
+            int hours=mins/60;
+
+
+            secs = secs % 60;
+            int milliseconds = (int) (updatedTime % 1000);
+            tvTimer.setText("" + hours + ":"
+
+                            + String.format("%02d", mins) + ":"
+
+                            + String.format("%02d", secs));
+
+            customHandler.postDelayed(this, 0);
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         checkInButton=(Button) findViewById(R.id.bt_checkin);
         checkOutButton=(Button)findViewById(R.id.bt_checkout);
         inTime=(TextView)findViewById(R.id.tv_checkintime) ;
+        tvTimer=(TextView)findViewById(R.id.tv_timer);
         // initialize GoogleMaps
         initGMaps();
 
@@ -98,21 +135,31 @@ public class MainActivity extends AppCompatActivity
         checkInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                /*SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 Calendar cal = Calendar.getInstance();
                 System.out.println("time => " + dateFormat.format(cal.getTime()));
-                inTime.setText(dateFormat.format(cal.getTime()));
-                CountDownTimer timer=new CountDownTimer(cal) {
-                    @Override
-                    public void onTick(long l) {
+                inTime.setText(dateFormat.format(cal.getTime()));*/
 
-                    }
+                startTime = SystemClock.uptimeMillis();
+                //inTime.setText((int) startTime);
+                customHandler.postDelayed(updateTimerThread, 0);
 
-                    @Override
-                    public void onFinish() {
 
-                    }
-                }
+            }
+        });
+
+        checkOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                Calendar cal = Calendar.getInstance();
+                System.out.println("time => " + dateFormat.format(cal.getTime()));
+                inTime.setText(dateFormat.format(cal.getTime()));*/
+
+
+                timeSwapBuff += timeInMilliseconds;
+                customHandler.removeCallbacks(updateTimerThread);
+
             }
         });
     }
