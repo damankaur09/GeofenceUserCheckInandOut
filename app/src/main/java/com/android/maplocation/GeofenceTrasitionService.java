@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Button;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
@@ -76,12 +75,12 @@ public class GeofenceTrasitionService extends IntentService {
         Log.i(TAG, "sendNotification: " + msg );
 
         // Intent to start the main Activity
-        Intent notificationIntent = MainActivity.makeNotificationIntent(
+        Intent notificationIntent = GetMapLocationActivity.makeNotificationIntent(
                 getApplicationContext(), msg
         );
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(GetMapLocationActivity.class);
         stackBuilder.addNextIntent(notificationIntent);
         PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 

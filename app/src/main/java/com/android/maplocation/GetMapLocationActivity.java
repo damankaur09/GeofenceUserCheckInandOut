@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -51,7 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity
+public class GetMapLocationActivity extends AppCompatActivity
         implements
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener,
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity
             GoogleMap.OnMarkerClickListener,
             ResultCallback<Status> {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = GetMapLocationActivity.class.getSimpleName();
 
     //handler for timer
     private Handler customHandler = new Handler();
@@ -75,8 +74,8 @@ public class MainActivity extends AppCompatActivity
     private Location lastLocation;
 
     private TextView textLat, textLong;
-    private TextView inTime;
-    private TextView tvTimer;
+    private TextView inTime,outTime;
+    private TextView tvTimer,tvLatLong;
     private Button checkInButton,checkOutButton;
 
     private MapFragment mapFragment;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
     // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
-        Intent intent = new Intent( context, MainActivity.class );
+        Intent intent = new Intent( context, GetMapLocationActivity.class );
         intent.putExtra( NOTIFICATION_MSG, msg );
         return intent;
     }
@@ -126,6 +125,8 @@ public class MainActivity extends AppCompatActivity
         checkOutButton=(Button)findViewById(R.id.bt_checkout);
         inTime=(TextView)findViewById(R.id.tv_checkintime) ;
         tvTimer=(TextView)findViewById(R.id.tv_timer);
+        outTime=(TextView)findViewById(R.id.tv_checkouttime);
+        tvLatLong=(TextView)findViewById(R.id.tv_lat_long) ;
         // initialize GoogleMaps
         initGMaps();
 
@@ -135,10 +136,10 @@ public class MainActivity extends AppCompatActivity
         checkInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 Calendar cal = Calendar.getInstance();
                 System.out.println("time => " + dateFormat.format(cal.getTime()));
-                inTime.setText(dateFormat.format(cal.getTime()));*/
+                inTime.setText(dateFormat.format(cal.getTime()));
 
                 startTime = SystemClock.uptimeMillis();
                 //inTime.setText((int) startTime);
@@ -151,15 +152,15 @@ public class MainActivity extends AppCompatActivity
         checkOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 Calendar cal = Calendar.getInstance();
                 System.out.println("time => " + dateFormat.format(cal.getTime()));
-                inTime.setText(dateFormat.format(cal.getTime()));*/
+                outTime.setText(dateFormat.format(cal.getTime()));
 
 
                 timeSwapBuff += timeInMilliseconds;
                 customHandler.removeCallbacks(updateTimerThread);
-
+                tvLatLong.setText("Totaltime ="+tvTimer.getText()+"Lat :"+lastLocation.getLatitude()+"Long :"+lastLocation.getLongitude());
             }
         });
     }
@@ -470,7 +471,7 @@ public class MainActivity extends AppCompatActivity
             drawGeofence();
         } else {
             // inform about fail
-            System.out.println("MainActivity.onResult--"+status.isSuccess());
+            System.out.println("GetMapLocationActivity.onResult--"+status.isSuccess());
 
         }
     }
