@@ -30,8 +30,8 @@ import android.widget.Toast;
 
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
-import com.android.maplocation.serviceparams.UserLoginParams;
 import com.android.maplocation.webservices.RetrofitClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -66,17 +67,18 @@ import retrofit2.Response;
 
 public class GetMapLocationActivity extends AppCompatActivity
         implements
-            GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener,
-            LocationListener,
-            OnMapReadyCallback/*,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener,
+        OnMapReadyCallback/*,
             GoogleMap.OnMapClickListener*/,
-            GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMarkerClickListener,
         AdapterView.OnItemSelectedListener,
-            ResultCallback<Status> {
+        ResultCallback<Status> {
 
     private static final String TAG = GetMapLocationActivity.class.getSimpleName();
 
+    private ArrayList<OfficeLocations> latlnglist = new ArrayList<>();
     //handler for timer
     private Handler customHandler = new Handler();
     long timeInMilliseconds = 0L;
@@ -89,26 +91,27 @@ public class GetMapLocationActivity extends AppCompatActivity
     private Location lastLocation;
 
     private TextView textLat, textLong;
-    private TextView inTime,outTime;
-    private TextView tvTimer,tvLatLong;
-    private Button checkInButton,checkOutButton;
+    private TextView inTime, outTime;
+    private TextView tvTimer, tvLatLong;
+    private Button checkInButton, checkOutButton;
     //Add spinner for office location
     private Spinner spinner;
-    private static final String[]paths = {"My office", "Vishakha Home", "Daman Home"};
+    private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
-    Date checkInTime,checkOutTime;
+    Date checkInTime, checkOutTime;
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+
     // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
-        Intent intent = new Intent( context, GetMapLocationActivity.class );
-        intent.putExtra( NOTIFICATION_MSG, msg );
+        Intent intent = new Intent(context, GetMapLocationActivity.class);
+        intent.putExtra(NOTIFICATION_MSG, msg);
         return intent;
     }
 
     // add timer
 
-    private Runnable updateTimerThread=new Runnable() {
+    private Runnable updateTimerThread = new Runnable() {
         @Override
         public void run() {
             timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
@@ -116,16 +119,16 @@ public class GetMapLocationActivity extends AppCompatActivity
 
             int secs = (int) (updatedTime / 1000);
             int mins = secs / 60;
-            int hours=mins/60;
+            int hours = mins / 60;
 
 
             secs = secs % 60;
             int milliseconds = (int) (updatedTime % 1000);
             tvTimer.setText("" + hours + ":"
 
-                            + String.format("%02d", mins) + ":"
+                    + String.format("%02d", mins) + ":"
 
-                            + String.format("%02d", secs));
+                    + String.format("%02d", secs));
 
             customHandler.postDelayed(this, 0);
 
@@ -138,12 +141,17 @@ public class GetMapLocationActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         textLat = (TextView) findViewById(R.id.lat);
         textLong = (TextView) findViewById(R.id.lon);
-        checkInButton=(Button) findViewById(R.id.bt_checkin);
-        checkOutButton=(Button)findViewById(R.id.bt_checkout);
-        inTime=(TextView)findViewById(R.id.tv_checkintime) ;
-        tvTimer=(TextView)findViewById(R.id.tv_timer);
-        outTime=(TextView)findViewById(R.id.tv_checkouttime);
-        tvLatLong=(TextView)findViewById(R.id.tv_lat_long) ;
+        checkInButton = (Button) findViewById(R.id.bt_checkin);
+        checkOutButton = (Button) findViewById(R.id.bt_checkout);
+        inTime = (TextView) findViewById(R.id.tv_checkintime);
+        tvTimer = (TextView) findViewById(R.id.tv_timer);
+        outTime = (TextView) findViewById(R.id.tv_checkouttime);
+        tvLatLong = (TextView) findViewById(R.id.tv_lat_long);
+        try {
+            latlnglist = getIntent().getParcelableArrayListExtra("OfficeList");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -186,7 +194,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
                 timeSwapBuff += timeInMilliseconds;
                 customHandler.removeCallbacks(updateTimerThread);
-                tvLatLong.setText("Totaltime ="+tvTimer.getText()+"Lat :"+lastLocation.getLatitude()+"Long :"+lastLocation.getLongitude());
+                tvLatLong.setText("Totaltime =" + tvTimer.getText() + "Lat :" + lastLocation.getLatitude() + "Long :" + lastLocation.getLongitude());
             }
         });
     }
@@ -195,11 +203,11 @@ public class GetMapLocationActivity extends AppCompatActivity
     // Create GoogleApiClient instance
     private void createGoogleApi() {
         Log.d(TAG, "createGoogleApi()");
-        if ( googleApiClient == null ) {
-            googleApiClient = new GoogleApiClient.Builder( this )
-                    .addConnectionCallbacks( this )
-                    .addOnConnectionFailedListener( this )
-                    .addApi( LocationServices.API )
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
                     .build();
         }
     }
@@ -223,19 +231,19 @@ public class GetMapLocationActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.main_menu, menu );
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch ( item.getItemId() ) {
+        switch (item.getItemId()) {
             case R.id.geofence: {
                 startGeofence();
                 return true;
             }
             case R.id.clear: {
-                clearGeofence();
+//                clearGeofence();
                 return true;
             }
         }
@@ -249,7 +257,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.d(TAG, "checkPermission()");
         // Ask for permission if it wasn't granted yet
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED );
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     // Asks for permission
@@ -257,7 +265,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.d(TAG, "askPermission()");
         ActivityCompat.requestPermissions(
                 this,
-                new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQ_PERMISSION
         );
     }
@@ -267,10 +275,10 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult()");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch ( requestCode ) {
+        switch (requestCode) {
             case REQ_PERMISSION: {
-                if ( grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission granted
                     getLastKnownLocation();
 
@@ -290,7 +298,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
     // Initialize GoogleMaps
-    private void initGMaps(){
+    private void initGMaps() {
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -314,31 +322,31 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d(TAG, "onMarkerClickListener: " + marker.getPosition() );
+        Log.d(TAG, "onMarkerClickListener: " + marker.getPosition());
         return false;
     }
 
     private LocationRequest locationRequest;
     // Defined in mili seconds.
     // This number in extremely low, and should be used only for debug
-    private final int UPDATE_INTERVAL =  1000;
+    private final int UPDATE_INTERVAL = 1000;
     private final int FASTEST_INTERVAL = 900;
 
     // Start location Updates
-    private void startLocationUpdates(){
+    private void startLocationUpdates() {
         Log.i(TAG, "startLocationUpdates()");
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(UPDATE_INTERVAL)
                 .setFastestInterval(FASTEST_INTERVAL);
 
-        if ( checkPermission() )
+        if (checkPermission())
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged ["+location+"]");
+        Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
         writeActualLocation(location);
     }
@@ -348,7 +356,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "onConnected()");
         getLastKnownLocation();
-        recoverGeofenceMarker();
+//        recoverGeofenceMarker();
         startGeofence();
     }
 
@@ -367,9 +375,9 @@ public class GetMapLocationActivity extends AppCompatActivity
     // Get last known location
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation()");
-        if ( checkPermission() ) {
+        if (checkPermission()) {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            if ( lastLocation != null ) {
+            if (lastLocation != null) {
                 Log.i(TAG, "LasKnown location. " +
                         "Long: " + lastLocation.getLongitude() +
                         " | Lat: " + lastLocation.getLatitude());
@@ -379,13 +387,12 @@ public class GetMapLocationActivity extends AppCompatActivity
                 Log.w(TAG, "No location retrieved yet");
                 startLocationUpdates();
             }
-        }
-        else askPermission();
+        } else askPermission();
     }
 
     private void writeActualLocation(Location location) {
-        textLat.setText( "Lat: " + location.getLatitude() );
-        textLong.setText( "Long: " + location.getLongitude() );
+        textLat.setText("Lat: " + location.getLatitude());
+        textLong.setText("Long: " + location.getLongitude());
 
         markerLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
@@ -395,71 +402,62 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
     private Marker locationMarker;
+
     private void markerLocation(LatLng latLng) {
-        Log.i(TAG, "markerLocation("+latLng+")");
+        Log.i(TAG, "markerLocation(" + latLng + ")");
         String title = latLng.latitude + ", " + latLng.longitude;
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .title(title);
-        if ( map!=null ) {
-            if ( locationMarker != null )
+        if (map != null) {
+            if (locationMarker != null)
                 locationMarker.remove();
             locationMarker = map.addMarker(markerOptions);
             float zoom = 14f;
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
             map.animateCamera(cameraUpdate);
         }
+
     }
 
 
     private Marker geoFenceMarker;
+
     private void markerForGeofence(LatLng latLng) {
-        Log.i(TAG, "markerForGeofence("+latLng+")");
+        Log.i(TAG, "markerForGeofence(" + latLng + ")");
         String title = latLng.latitude + ", " + latLng.longitude;
         // Define marker options
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .title(title);
-        if ( map!=null ) {
-            // Remove last geoFenceMarker
-            if (geoFenceMarker != null)
-                geoFenceMarker.remove();
+        if (map != null) {
+//            // Remove last geoFenceMarker
+//            if (geoFenceMarker != null)
+//                geoFenceMarker.remove();
 
             geoFenceMarker = map.addMarker(markerOptions);
 
         }
     }
 
+
     //fetch locations data to create region
-    private void fetchLocationData()
-    {
-        OfficeLocationParams params=new OfficeLocationParams();
-        params.setTask("getAllSiteslocation");
 
-        Call<OfficeLocationBean> call= RetrofitClient.getRetrofitClient().location(params);
 
-        call.enqueue(new Callback<OfficeLocationBean>() {
-            @Override
-            public void onResponse(Call<OfficeLocationBean> call, Response<OfficeLocationBean> response) {
-                List<Locations> locations=response.body().getDataBean();
-            }
+    private double latitude = 30.6754302, longitude = 76.7405481;
 
-            @Override
-            public void onFailure(Call<OfficeLocationBean> call, Throwable t) {
-
-            }
-        });
-    }
-
-    private double latitude=30.6754302,longitude=76.7405481;
     // Start Geofence creation process
     private void startGeofence() {
         Log.i(TAG, "startGeofence()");
 
-        Geofence geofence = createGeofence( latitude,longitude, GEOFENCE_RADIUS );
-        GeofencingRequest geofenceRequest = createGeofenceRequest( geofence );
-        addGeofence( geofenceRequest );
+        for (int i = 0; i < latlnglist.size(); i++) {
+            Geofence geofence = createGeofence(latlnglist.get(i).getLatitude(), latlnglist.get(i).getLongitude(), GEOFENCE_RADIUS);
+            GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
+            addGeofence(geofenceRequest);
+        }
+
+
 //        if( geoFenceMarker != null ) {
 //            Geofence geofence = createGeofence( geoFenceMarker.getPosition(), GEOFENCE_RADIUS );
 //            GeofencingRequest geofenceRequest = createGeofenceRequest( geofence );
@@ -488,36 +486,37 @@ public class GetMapLocationActivity extends AppCompatActivity
 
 
     // Create a Geofence
-    private Geofence createGeofence( double latitude,double longitude, float radius ) {
+    private Geofence createGeofence(double latitude, double longitude, float radius) {
         Log.d(TAG, "createGeofence");
         return new Geofence.Builder()
                 .setRequestId(GEOFENCE_REQ_ID)
-                .setCircularRegion( latitude, longitude, radius)
-                .setExpirationDuration( GEO_DURATION )
-                .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_ENTER
-                        | Geofence.GEOFENCE_TRANSITION_EXIT )
+                .setCircularRegion(latitude, longitude, radius)
+                .setExpirationDuration(GEO_DURATION)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER
+                        | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build();
     }
 
     // Create a Geofence Request
-    private GeofencingRequest createGeofenceRequest( Geofence geofence ) {
+    private GeofencingRequest createGeofenceRequest(Geofence geofence) {
         Log.d(TAG, "createGeofenceRequest");
         return new GeofencingRequest.Builder()
-                .setInitialTrigger( GeofencingRequest.INITIAL_TRIGGER_ENTER )
-                .addGeofence( geofence )
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofence(geofence)
                 .build();
     }
 
     private PendingIntent geoFencePendingIntent;
     private final int GEOFENCE_REQ_CODE = 0;
+
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
-        if ( geoFencePendingIntent != null )
+        if (geoFencePendingIntent != null)
             return geoFencePendingIntent;
 
-        Intent intent = new Intent( this, GeofenceReciever.class);
+        Intent intent = new Intent(this, GeofenceReciever.class);
         return PendingIntent.getBroadcast(
-                this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+                this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     // Add the created GeofenceRequest to the device's monitoring list
@@ -534,38 +533,40 @@ public class GetMapLocationActivity extends AppCompatActivity
     @Override
     public void onResult(@NonNull Status status) {
         Log.i(TAG, "onResult: " + status);
-        if ( status.isSuccess() ) {
+        if (status.isSuccess()) {
 
-            saveGeofence();
+            //saveGeofence();
             drawGeofence();
         } else {
-            // inform about fail
-            System.out.println("GetMapLocationActivity.onResult--"+status.isSuccess());
+            // inform about failmarkerForGeofence
+            System.out.println("GetMapLocationActivity.onResult--" + status.isSuccess());
             /*saveGeofence();
             drawGeofence();*/
         }
     }
 
     // Draw Geofence circle on GoogleMap
-    private Circle geoFenceLimits;
+
     private void drawGeofence() {
         Log.d(TAG, "drawGeofence()");
-        LatLng latLng=new LatLng(latitude,longitude);
-        if ( geoFenceLimits != null )
-            geoFenceLimits.remove();
-
-        CircleOptions circleOptions = new CircleOptions()
-                .center( latLng)
-                .strokeColor(Color.argb(50, 70,70,70))
-                .fillColor( Color.argb(100, 150,150,150) )
-                .radius( GEOFENCE_RADIUS );
-        geoFenceLimits = map.addCircle( circleOptions );
+        LatLng latLng = null;
+        for (int i = 0; i < latlnglist.size(); i++) {
+            latLng = new LatLng(latlnglist.get(i).getLatitude(), latlnglist.get(i).getLongitude());
+            markerForGeofence(latLng);
+                CircleOptions circleOptions = new CircleOptions()
+                        .center(latLng)
+                        .strokeColor(Color.argb(50, 70, 70, 70))
+                        .fillColor(Color.argb(100, 150, 150, 150))
+                        .radius(GEOFENCE_RADIUS);
+                map.addCircle(circleOptions);
+        }
     }
+
 
     private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
     private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
 
-    // Saving GeoFence marker with prefs mng
+   /* // Saving GeoFence marker with prefs mng
     private void saveGeofence() {
         Log.d(TAG, "saveGeofence()");
         SharedPreferences sharedPref = getPreferences( Context.MODE_PRIVATE );
@@ -574,9 +575,9 @@ public class GetMapLocationActivity extends AppCompatActivity
         editor.putLong( KEY_GEOFENCE_LAT, Double.doubleToRawLongBits( latitude ));
         editor.putLong( KEY_GEOFENCE_LON, Double.doubleToRawLongBits( longitude ));
         editor.apply();
-    }
+    }*/
 
-    // Recovering last Geofence marker
+   /* // Recovering last Geofence marker
     private void recoverGeofenceMarker() {
         Log.d(TAG, "recoverGeofenceMarker");
         SharedPreferences sharedPref = getPreferences( Context.MODE_PRIVATE );
@@ -588,32 +589,32 @@ public class GetMapLocationActivity extends AppCompatActivity
             markerForGeofence(latLng);
             drawGeofence();
         }
-    }
+    }*/
 
-    // Clear Geofence
-    private void clearGeofence() {
-        Log.d(TAG, "clearGeofence()");
-        LocationServices.GeofencingApi.removeGeofences(
-                googleApiClient,
-                createGeofencePendingIntent()
-        ).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if ( status.isSuccess() ) {
-                    // remove drawing
-                    removeGeofenceDraw();
-                }
-            }
-        });
-    }
-
-    private void removeGeofenceDraw() {
-        Log.d(TAG, "removeGeofenceDraw()");
-        if ( geoFenceMarker != null)
-            geoFenceMarker.remove();
-        if ( geoFenceLimits != null )
-            geoFenceLimits.remove();
-    }
+//    // Clear Geofence
+//    private void clearGeofence() {
+//        Log.d(TAG, "clearGeofence()");
+//        LocationServices.GeofencingApi.removeGeofences(
+//                googleApiClient,
+//                createGeofencePendingIntent()
+//        ).setResultCallback(new ResultCallback<Status>() {
+//            @Override
+//            public void onResult(@NonNull Status status) {
+//                if ( status.isSuccess() ) {
+//                    // remove drawing
+//                    removeGeofenceDraw();
+//                }
+//            }
+//        });
+//    }
+//
+//    private void removeGeofenceDraw() {
+//        Log.d(TAG, "removeGeofenceDraw()");
+//        if ( geoFenceMarker != null)
+//            geoFenceMarker.remove();
+//        if ( geoFenceLimits != null )
+//            geoFenceLimits.remove();
+//    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

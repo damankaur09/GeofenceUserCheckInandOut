@@ -11,10 +11,18 @@ import android.widget.Toast;
 
 import com.android.maplocation.GetMapLocationActivity;
 import com.android.maplocation.R;
+import com.android.maplocation.bean.Locations;
+import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.UserLoginBean;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.registeruser.RegisterUserActivity;
+import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;
 import com.android.maplocation.webservices.RetrofitClient;
+
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,9 +84,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserLoginBean> call, Response<UserLoginBean> response) {
 
                 Toast.makeText(LoginActivity.this, "Record found", Toast.LENGTH_SHORT).show();
+                fetchLocationData();
 
-            Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
-            startActivity(mapLocation);
 
             }
 
@@ -87,5 +94,41 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void fetchLocationData()
+    {
+        final ArrayList<OfficeLocations> latlnglist=new ArrayList<>();
+        OfficeLocationParams params=new OfficeLocationParams();
+        params.setTask("getAllSiteslocation");
+
+        Call<OfficeLocationBean> call= RetrofitClient.getRetrofitClient().location(params);
+
+        call.enqueue(new Callback<OfficeLocationBean>() {
+            @Override
+            public void onResponse(Call<OfficeLocationBean> call, Response<OfficeLocationBean> response) {
+                List<Locations> locations=response.body().getDataBean();
+
+                double latitude,longitude=0.0;
+                for (int i=0;i<locations.size();i++)
+                {
+                    latitude= Double.parseDouble(locations.get(i).getLattitude());
+                    longitude= Double.parseDouble(locations.get(i).getLongitude());
+                    latlnglist.add(new OfficeLocations(latitude,longitude));
+
+                }
+
+                Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
+                mapLocation.putExtra("OfficeList",latlnglist);
+                startActivity(mapLocation);
+            }
+
+            @Override
+            public void onFailure(Call<OfficeLocationBean> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+
     }
 }

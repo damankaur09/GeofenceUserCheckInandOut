@@ -83,6 +83,7 @@ public class GeofenceReciever extends BroadcastReceiver
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
+
             for (Geofence geofence : triggeringGeofences) {
                 //payload_data=getNotificationMessageFromPreference(geofence.getRequestId());
                 //String strNotificationTitle=getNotificationTitle(payload_data);

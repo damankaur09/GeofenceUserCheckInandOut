@@ -23,7 +23,7 @@ public class Locations
     @SerializedName("lattitude")
     @Expose
     private String lattitude;
-    @SerializedName("sitelocation_id")
+    @SerializedName("longitude")
     @Expose
     private String longitude;
 
