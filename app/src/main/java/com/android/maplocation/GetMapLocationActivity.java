@@ -55,8 +55,8 @@ public class GetMapLocationActivity extends AppCompatActivity
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener,
             LocationListener,
-            OnMapReadyCallback,
-            GoogleMap.OnMapClickListener,
+            OnMapReadyCallback/*,
+            GoogleMap.OnMapClickListener*/,
             GoogleMap.OnMarkerClickListener,
             ResultCallback<Status> {
 
@@ -273,15 +273,17 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady()");
         map = googleMap;
-        map.setOnMapClickListener(this);
+//        map.setOnMapClickListener(this);
         map.setOnMarkerClickListener(this);
+
+
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-        Log.d(TAG, "onMapClick("+latLng +")");
-        markerForGeofence(latLng);
-    }
+//    @Override
+//    public void onMapClick(LatLng latLng) {
+//        Log.d(TAG, "onMapClick("+latLng +")");
+//        markerForGeofence(latLng);
+//    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -320,6 +322,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.i(TAG, "onConnected()");
         getLastKnownLocation();
         recoverGeofenceMarker();
+        startGeofence();
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
@@ -400,30 +403,47 @@ public class GetMapLocationActivity extends AppCompatActivity
 
         }
     }
-
+    private double latitude=30.6754302,longitude=76.7405481;
     // Start Geofence creation process
     private void startGeofence() {
         Log.i(TAG, "startGeofence()");
-        if( geoFenceMarker != null ) {
-            Geofence geofence = createGeofence( geoFenceMarker.getPosition(), GEOFENCE_RADIUS );
-            GeofencingRequest geofenceRequest = createGeofenceRequest( geofence );
-            addGeofence( geofenceRequest );
-        } else {
-            Log.e(TAG, "Geofence marker is null");
-        }
+
+        Geofence geofence = createGeofence( latitude,longitude, GEOFENCE_RADIUS );
+        GeofencingRequest geofenceRequest = createGeofenceRequest( geofence );
+        addGeofence( geofenceRequest );
+//        if( geoFenceMarker != null ) {
+//            Geofence geofence = createGeofence( geoFenceMarker.getPosition(), GEOFENCE_RADIUS );
+//            GeofencingRequest geofenceRequest = createGeofenceRequest( geofence );
+//            addGeofence( geofenceRequest );
+//        } else {
+//            Log.e(TAG, "Geofence marker is null");
+//        }
     }
 
     private static final long GEO_DURATION = 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
     //Radius draw for the selected location
-    private static final float GEOFENCE_RADIUS = 500.0f; // in meters
+    private static final float GEOFENCE_RADIUS = 1000.0f; // in meters
 
-    // Create a Geofence
+   /* // Create a Geofence
     private Geofence createGeofence( LatLng latLng, float radius ) {
         Log.d(TAG, "createGeofence");
         return new Geofence.Builder()
                 .setRequestId(GEOFENCE_REQ_ID)
                 .setCircularRegion( latLng.latitude, latLng.longitude, radius)
+                .setExpirationDuration( GEO_DURATION )
+                .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_ENTER
+                        | Geofence.GEOFENCE_TRANSITION_EXIT )
+                .build();
+    }*/
+
+
+    // Create a Geofence
+    private Geofence createGeofence( double latitude,double longitude, float radius ) {
+        Log.d(TAG, "createGeofence");
+        return new Geofence.Builder()
+                .setRequestId(GEOFENCE_REQ_ID)
+                .setCircularRegion( latitude, longitude, radius)
                 .setExpirationDuration( GEO_DURATION )
                 .setTransitionTypes( Geofence.GEOFENCE_TRANSITION_ENTER
                         | Geofence.GEOFENCE_TRANSITION_EXIT )
@@ -472,7 +492,8 @@ public class GetMapLocationActivity extends AppCompatActivity
         } else {
             // inform about fail
             System.out.println("GetMapLocationActivity.onResult--"+status.isSuccess());
-
+            /*saveGeofence();
+            drawGeofence();*/
         }
     }
 
@@ -480,12 +501,12 @@ public class GetMapLocationActivity extends AppCompatActivity
     private Circle geoFenceLimits;
     private void drawGeofence() {
         Log.d(TAG, "drawGeofence()");
-
+        LatLng latLng=new LatLng(latitude,longitude);
         if ( geoFenceLimits != null )
             geoFenceLimits.remove();
 
         CircleOptions circleOptions = new CircleOptions()
-                .center( geoFenceMarker.getPosition())
+                .center( latLng)
                 .strokeColor(Color.argb(50, 70,70,70))
                 .fillColor( Color.argb(100, 150,150,150) )
                 .radius( GEOFENCE_RADIUS );
@@ -501,8 +522,8 @@ public class GetMapLocationActivity extends AppCompatActivity
         SharedPreferences sharedPref = getPreferences( Context.MODE_PRIVATE );
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        editor.putLong( KEY_GEOFENCE_LAT, Double.doubleToRawLongBits( geoFenceMarker.getPosition().latitude ));
-        editor.putLong( KEY_GEOFENCE_LON, Double.doubleToRawLongBits( geoFenceMarker.getPosition().longitude ));
+        editor.putLong( KEY_GEOFENCE_LAT, Double.doubleToRawLongBits( latitude ));
+        editor.putLong( KEY_GEOFENCE_LON, Double.doubleToRawLongBits( longitude ));
         editor.apply();
     }
 
