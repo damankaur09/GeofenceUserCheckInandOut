@@ -21,9 +21,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.maplocation.bean.Locations;
+import com.android.maplocation.bean.OfficeLocationBean;
+import com.android.maplocation.serviceparams.OfficeLocationParams;
+import com.android.maplocation.serviceparams.UserLoginParams;
+import com.android.maplocation.webservices.RetrofitClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -48,6 +57,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class GetMapLocationActivity extends AppCompatActivity
@@ -58,6 +72,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             OnMapReadyCallback/*,
             GoogleMap.OnMapClickListener*/,
             GoogleMap.OnMarkerClickListener,
+        AdapterView.OnItemSelectedListener,
             ResultCallback<Status> {
 
     private static final String TAG = GetMapLocationActivity.class.getSimpleName();
@@ -77,7 +92,9 @@ public class GetMapLocationActivity extends AppCompatActivity
     private TextView inTime,outTime;
     private TextView tvTimer,tvLatLong;
     private Button checkInButton,checkOutButton;
-
+    //Add spinner for office location
+    private Spinner spinner;
+    private static final String[]paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
     Date checkInTime,checkOutTime;
 
@@ -127,6 +144,15 @@ public class GetMapLocationActivity extends AppCompatActivity
         tvTimer=(TextView)findViewById(R.id.tv_timer);
         outTime=(TextView)findViewById(R.id.tv_checkouttime);
         tvLatLong=(TextView)findViewById(R.id.tv_lat_long) ;
+
+        spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.planets_array, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
         // initialize GoogleMaps
         initGMaps();
 
@@ -164,6 +190,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             }
         });
     }
+
 
     // Create GoogleApiClient instance
     private void createGoogleApi() {
@@ -403,6 +430,28 @@ public class GetMapLocationActivity extends AppCompatActivity
 
         }
     }
+
+    //fetch locations data to create region
+    private void fetchLocationData()
+    {
+        OfficeLocationParams params=new OfficeLocationParams();
+        params.setTask("getAllSiteslocation");
+
+        Call<OfficeLocationBean> call= RetrofitClient.getRetrofitClient().location(params);
+
+        call.enqueue(new Callback<OfficeLocationBean>() {
+            @Override
+            public void onResponse(Call<OfficeLocationBean> call, Response<OfficeLocationBean> response) {
+                List<Locations> locations=response.body().getDataBean();
+            }
+
+            @Override
+            public void onFailure(Call<OfficeLocationBean> call, Throwable t) {
+
+            }
+        });
+    }
+
     private double latitude=30.6754302,longitude=76.7405481;
     // Start Geofence creation process
     private void startGeofence() {
@@ -466,8 +515,8 @@ public class GetMapLocationActivity extends AppCompatActivity
         if ( geoFencePendingIntent != null )
             return geoFencePendingIntent;
 
-        Intent intent = new Intent( this, GeofenceTrasitionService.class);
-        return PendingIntent.getService(
+        Intent intent = new Intent( this, GeofenceReciever.class);
+        return PendingIntent.getBroadcast(
                 this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT );
     }
 
@@ -566,4 +615,14 @@ public class GetMapLocationActivity extends AppCompatActivity
             geoFenceLimits.remove();
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        // TODO Auto-generated method stub
+        Toast.makeText(this, "YOUR SELECTION IS : " + adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }

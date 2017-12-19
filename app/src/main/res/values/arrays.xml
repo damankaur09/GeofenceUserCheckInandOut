@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="planets_array">
+        <item>My Office</item>
+        <item>Vishakha Home</item>
+        <item>Daman Home</item>
+
+    </string-array>
+</resources>

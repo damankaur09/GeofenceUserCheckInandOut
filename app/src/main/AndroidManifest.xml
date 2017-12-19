@@ -13,6 +13,15 @@
         android:theme="@style/AppTheme">
         <service android:name=".GeofenceTrasitionService" />
 
+        <receiver android:name=".GeofenceReciever">
+        <intent-filter>
+            <action android:name="com.example.SendBroadcast" >
+            </action>
+            <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" >
+            </action>
+        </intent-filter>
+    </receiver>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDZXdF-7ZVBhuWZ--M-VQx7b6sr8ZXGmZ0" />
