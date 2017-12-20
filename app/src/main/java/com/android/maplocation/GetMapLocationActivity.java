@@ -102,7 +102,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
-    //sen Create a Intent d by the notification
+    // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
         Intent intent = new Intent(context, GetMapLocationActivity.class);
         intent.putExtra(NOTIFICATION_MSG, msg);
@@ -553,12 +553,12 @@ public class GetMapLocationActivity extends AppCompatActivity
         for (int i = 0; i < latlnglist.size(); i++) {
             latLng = new LatLng(latlnglist.get(i).getLatitude(), latlnglist.get(i).getLongitude());
             markerForGeofence(latLng);
-                CircleOptions circleOptions = new CircleOptions()
-                        .center(latLng)
-                        .strokeColor(Color.argb(50, 70, 70, 70))
-                        .fillColor(Color.argb(100, 150, 150, 150))
-                        .radius(GEOFENCE_RADIUS);
-                map.addCircle(circleOptions);
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(latLng)
+                    .strokeColor(Color.argb(50, 70, 70, 70))
+                    .fillColor(Color.argb(100, 150, 150, 150))
+                    .radius(GEOFENCE_RADIUS);
+            map.addCircle(circleOptions);
         }
     }
 
