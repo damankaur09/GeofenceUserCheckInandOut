@@ -102,7 +102,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
-    // Create a Intent send by the notification
+    //sen Create a Intent d by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
         Intent intent = new Intent(context, GetMapLocationActivity.class);
         intent.putExtra(NOTIFICATION_MSG, msg);
