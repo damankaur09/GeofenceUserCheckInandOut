@@ -181,3 +181,4 @@ public class GeofenceReciever extends BroadcastReceiver
         notificationManager.notify(randomNumber /* ID of notification */, notificationBuilder.build());
     }
 }
+
