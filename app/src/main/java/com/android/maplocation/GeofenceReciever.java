@@ -108,7 +108,7 @@ public class GeofenceReciever extends BroadcastReceiver
         }
     }
 
-    private String getNotificationTitle(String payload){
+    /*private String getNotificationTitle(String payload){
         String title=null;
         try {
             JSONObject json = new JSONObject(payload);
@@ -120,7 +120,7 @@ public class GeofenceReciever extends BroadcastReceiver
         }
         return title;
     }
-
+*/
 
     private String getMessage(String payload){
         String message=null;

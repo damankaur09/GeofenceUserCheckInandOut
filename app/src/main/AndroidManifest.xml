@@ -13,7 +13,12 @@
         android:theme="@style/AppTheme">
         <service android:name=".GeofenceTrasitionService" />
 
-        <receiver android:name=".GeofenceReciever">
+        <receiver android:name=".GeofenceReciever"
+            android:permission=".permission.A4S_SEND">
+            <intent-filter>
+                <action android:name="com.ad4screen.sdk.intent.action.TRIGGER" />
+                <category android:name="com.ad4screen.sdk.intent.category.GEOFENCE_NOTIFICATIONS" />
+            </intent-filter>
         <intent-filter>
             <action android:name="com.example.SendBroadcast" >
             </action>
