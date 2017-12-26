@@ -3,6 +3,7 @@
     package="com.android.maplocation">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,41 +13,34 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service android:name=".GeofenceTrasitionService" />
+        <service android:name=".geofence.GeofenceTransitionService" />
 
-        <receiver android:name=".GeofenceReciever"
-            android:permission=".permission.A4S_SEND">
+
+        <receiver android:name=".geofence.GeofenceReciever">
             <intent-filter>
-                <action android:name="com.ad4screen.sdk.intent.action.TRIGGER" />
-                <category android:name="com.ad4screen.sdk.intent.category.GEOFENCE_NOTIFICATIONS" />
+                <action android:name="com.android.maplocation.geofence.GeofenceReciever.ACTION_RECIEVE_GEOFENCE" />
             </intent-filter>
-        <intent-filter>
-            <action android:name="com.example.SendBroadcast" >
-            </action>
-            <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" >
-            </action>
-        </intent-filter>
-    </receiver>
+        </receiver>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDZXdF-7ZVBhuWZ--M-VQx7b6sr8ZXGmZ0" />
+            android:value="AIzaSyCBEnPn4lZWkqn8irkEF-0xPOfCsJ4-u50" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".GetMapLocationActivity">
+        <activity android:name=".geofence.GetMapLocationActivity">
 
         </activity>
         <activity android:name=".login.LoginActivity">
 
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".registeruser.RegisterUserActivity"></activity>
+        <activity android:name=".registeruser.RegisterUserActivity" />
     </application>
 
 </manifest>

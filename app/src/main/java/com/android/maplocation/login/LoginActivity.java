@@ -3,13 +3,12 @@ package com.android.maplocation.login;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.maplocation.GetMapLocationActivity;
+import com.android.maplocation.geofence.GetMapLocationActivity;
 import com.android.maplocation.R;
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
@@ -20,7 +19,6 @@ import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;
 import com.android.maplocation.webservices.RetrofitClient;
 
-import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     latitude= Double.parseDouble(locations.get(i).getLattitude());
                     longitude= Double.parseDouble(locations.get(i).getLongitude());
-                    latlnglist.add(new OfficeLocations(latitude,longitude));
+                    latlnglist.add(new OfficeLocations(latitude,longitude,"key"+i));
 
                 }
 
