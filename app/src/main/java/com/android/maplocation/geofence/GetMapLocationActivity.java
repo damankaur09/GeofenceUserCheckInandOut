@@ -27,7 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.maplocation.R;
+import com.android.maplocation.bean.CheckInTimeBean;
 import com.android.maplocation.pojo.OfficeLocations;
+import com.android.maplocation.serviceparams.CheckInTimeParams;
+import com.android.maplocation.webservices.RetrofitClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -56,6 +59,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class GetMapLocationActivity extends AppCompatActivity
@@ -140,22 +147,24 @@ public class GetMapLocationActivity extends AppCompatActivity
         checkInButton = (Button) findViewById(R.id.bt_checkin);
         checkOutButton = (Button) findViewById(R.id.bt_checkout);
         inTime = (TextView) findViewById(R.id.tv_checkintime);
-        tvTimer = (TextView) findViewById(R.id.tv_timer);
+        //tvTimer = (TextView) findViewById(R.id.tv_timer);
         outTime = (TextView) findViewById(R.id.tv_checkouttime);
         tvLatLong = (TextView) findViewById(R.id.tv_lat_long);
         try {
             latlnglist = getIntent().getParcelableArrayListExtra("OfficeList");
+
+            userid=getIntent().getStringExtra("id");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        spinner = findViewById(R.id.spinner);
+       /* spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.planets_array, android.R.layout.simple_spinner_item);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        spinner.setOnItemSelectedListener(this);*/
 
         // initialize GoogleMaps
         initGMaps();
@@ -172,12 +181,11 @@ public class GetMapLocationActivity extends AppCompatActivity
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 Calendar cal = Calendar.getInstance();
                 System.out.println("time => " + dateFormat.format(cal.getTime()));
-                inTime.setText(dateFormat.format(cal.getTime()));
+                inTime.setText(dateFormat.format(cal.getTime()));inTime.setText(dateFormat.format(cal.getTime()));
 
                 startTime = SystemClock.uptimeMillis();
                 //inTime.setText((int) startTime);
                 customHandler.postDelayed(updateTimerThread, 0);
-
 
             }
         });
@@ -185,7 +193,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         checkOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-mm-dd HH:mm:ss");
                 Calendar cal = Calendar.getInstance();
                 System.out.println("time => " + dateFormat.format(cal.getTime()));
                 outTime.setText(dateFormat.format(cal.getTime()));
@@ -201,6 +209,41 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
 
+   /* private void sendCheckInData()
+    {
+        CheckInTimeParams params=new CheckInTimeParams();
+        params.setTask("addWorklog");
+        params.setUserId(userid);
+        params.setLattitude(lastLocation.getLatitude());
+        params.setLongitude(lastLocation.getLongitude());
+        for(int i=0;i<latlnglist.size();i++)
+        {
+            if(((latlnglist.get(i).getLatitude())==lastLocation.getLatitude() &&
+                    ((latlnglist.get(i).getLongitude())==lastLocation.getLongitude() )))
+            {
+                params.setSiteLocationId(latlnglist.get(i).getLocation_id());
+            }
+        }
+        params.setUserTimeZone("Asia/Kolkata");
+
+        //chck in time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-mm-dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        params.setCheckinTime(dateFormat.format(cal.getTime()));
+        Call<CheckInTimeBean> call= RetrofitClient.getRetrofitClient().checkin(params);
+        call.enqueue(new Callback<CheckInTimeBean>() {
+            @Override
+            public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
+                Toast.makeText(GetMapLocationActivity.this, response.body().getStatus(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<CheckInTimeBean> call, Throwable t) {
+
+            }
+        });
+
+    }*/
     // Create GoogleApiClient instance
     private void createGoogleApi() {
         Log.d(TAG, "createGoogleApi()");

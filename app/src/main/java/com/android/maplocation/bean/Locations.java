@@ -13,7 +13,7 @@ public class Locations
 
     @SerializedName("sitelocation_id")
     @Expose
-    private String sitelocation_id;
+    private int sitelocation_id;
     @SerializedName("site_name")
     @Expose
     private String site_name;
@@ -22,16 +22,16 @@ public class Locations
     private String site_address;
     @SerializedName("lattitude")
     @Expose
-    private String lattitude;
+    private double lattitude;
     @SerializedName("longitude")
     @Expose
-    private String longitude;
+    private double longitude;
 
-    public String getSitelocation_id() {
+    public int getSitelocation_id() {
         return sitelocation_id;
     }
 
-    public void setSitelocation_id(String sitelocation_id) {
+    public void setSitelocation_id(int sitelocation_id) {
         this.sitelocation_id = sitelocation_id;
     }
 
@@ -51,19 +51,19 @@ public class Locations
         this.site_address = site_address;
     }
 
-    public String getLattitude() {
+    public double getLattitude() {
         return lattitude;
     }
 
-    public void setLattitude(String lattitude) {
+    public void setLattitude(double lattitude) {
         this.lattitude = lattitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }

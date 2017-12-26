@@ -14,6 +14,7 @@ import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.UserLoginBean;
 import com.android.maplocation.pojo.OfficeLocations;
+import com.android.maplocation.pojo.UserDetails;
 import com.android.maplocation.registeruser.RegisterUserActivity;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;
@@ -111,8 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                 double latitude,longitude=0.0;
                 for (int i=0;i<locations.size();i++)
                 {
-                    latitude= Double.parseDouble(locations.get(i).getLattitude());
-                    longitude= Double.parseDouble(locations.get(i).getLongitude());
+                    latitude= locations.get(i).getLattitude();
+                    longitude= locations.get(i).getLongitude();
                     latlnglist.add(new OfficeLocations(latitude,longitude,"key"+i));
 
                 }

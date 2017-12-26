@@ -11,12 +11,18 @@ public class OfficeLocations implements Parcelable {
 
     private double longitude;
     private double latitude;
+    private int location_id;
     private String key;
 
     public OfficeLocations(double latitude, double longitude,String key) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.location_id=location_id;
         this.key=key;
+    }
+
+    public int getLocation_id() {
+        return location_id;
     }
 
     public String getKey() {
@@ -41,12 +47,14 @@ public class OfficeLocations implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeDouble(this.longitude);
         dest.writeDouble(this.latitude);
+        dest.writeInt(this.location_id);
         dest.writeString(this.key);
     }
 
     protected OfficeLocations(Parcel in) {
         this.longitude = in.readDouble();
         this.latitude = in.readDouble();
+        this.location_id=in.readInt();
         this.key = in.readString();
     }
 
