@@ -32,11 +32,11 @@ public class CheckInTimeParams {
     @SerializedName("checkoutTime")
     private String checkoutTime;
     @SerializedName("lattitude")
-    private double lattitude;
+    private String lattitude;
     @SerializedName("longitude")
-    private double longitude;
+    private String longitude;
     @SerializedName("total_hours")
-    private double totalHours;
+    private String totalHours;
     @SerializedName("userTimeZone")
     private String userTimeZone;
 
@@ -86,27 +86,27 @@ public class CheckInTimeParams {
         this.checkoutTime = checkoutTime;
     }
 
-    public double getLattitude() {
+    public String getLattitude() {
         return lattitude;
     }
 
-    public void setLattitude(double lattitude) {
+    public void setLattitude(String lattitude) {
         this.lattitude = lattitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
-    public double getTotalHours() {
+    public String getTotalHours() {
         return totalHours;
     }
 
-    public void setTotalHours(double totalHours) {
+    public void setTotalHours(String totalHours) {
         this.totalHours = totalHours;
     }
 
