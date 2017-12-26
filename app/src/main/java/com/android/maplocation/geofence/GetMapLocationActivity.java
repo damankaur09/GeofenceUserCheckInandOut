@@ -477,7 +477,8 @@ public class GetMapLocationActivity extends AppCompatActivity
                 .setExpirationDuration(GEO_DURATION)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER
                         | Geofence.GEOFENCE_TRANSITION_EXIT
-                        | Geofence.GEOFENCE_TRANSITION_DWELL)
+//                        | Geofence.GEOFENCE_TRANSITION_DWELL
+                    )
                 .setLoiteringDelay(30000)
                 .build();
     }

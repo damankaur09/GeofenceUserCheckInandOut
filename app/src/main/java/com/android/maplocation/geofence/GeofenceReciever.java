@@ -14,6 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.maplocation.R;
+import com.android.maplocation.login.LoginActivity;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
@@ -141,8 +142,8 @@ public class GeofenceReciever extends BroadcastReceiver {
                 return context.getString(R.string.geofence_transition_entered);
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 return context.getString(R.string.geofence_transition_exited);
-                case Geofence.GEOFENCE_TRANSITION_DWELL:
-                return context.getString(R.string.geofence_transition_exited);
+//            case Geofence.GEOFENCE_TRANSITION_DWELL:
+//                return context.getString(R.string.geofence_transition_exited);
             default:
                 return context.getString(R.string.unknown_geofence_transition);
         }
@@ -157,24 +158,24 @@ public class GeofenceReciever extends BroadcastReceiver {
 
         PendingIntent pIntent = PendingIntent.getActivity(context, requestID,
                 event_detail_intent, 0);
-//        NotificationCompat.Builder notificationBuilder;
-//        notificationBuilder = new NotificationCompat.Builder(context)
-//                .setContentTitle(event_name)
-//                .setSmallIcon(R.drawable.notify_small);
-//        // Set pending intent
-//        notificationBuilder.setContentIntent(pIntent);
+        NotificationCompat.Builder notificationBuilder;
+        notificationBuilder = new NotificationCompat.Builder(context,CHANNEL_ID)
+                .setContentTitle(event_name)
+                .setSmallIcon(R.drawable.ic_action_location);
+        // Set pending intent
+        notificationBuilder.setContentIntent(pIntent);
 
-        // Set Vibrate, Sound and Light
-//        int defaults = 0;
-//        defaults = defaults | Notification.DEFAULT_LIGHTS;
-//        //	defaults = defaults | Notification.DEFAULT_VIBRATE;
-//        defaults = defaults | Notification.DEFAULT_SOUND;
+         //Set Vibrate, Sound and Light
+        int defaults = 0;
+        defaults = defaults | Notification.DEFAULT_LIGHTS;
+        //	defaults = defaults | Notification.DEFAULT_VIBRATE;
+        defaults = defaults | Notification.DEFAULT_SOUND;
 
-//        notificationBuilder.setDefaults(defaults);
-//        // Set the content for Notification
-//        notificationBuilder.setContentText("Tap here to view detail");
-//        // Set autocancel
-//        notificationBuilder.setAutoCancel(true);
+        notificationBuilder.setDefaults(defaults);
+        // Set the content for Notification
+        notificationBuilder.setContentText("Please login and start your shift");
+        // Set autocancel
+        notificationBuilder.setAutoCancel(true);
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // Assign random number for multiple notification
@@ -194,12 +195,12 @@ public class GeofenceReciever extends BroadcastReceiver {
                 notificationManager.createNotificationChannel(mChannel);
             }
 
-            notificationManager.notify(0 /* ID of notification */, createNotification(event_name, pIntent));
+            notificationManager.notify(randomNumber /* ID of notification */, notificationBuilder.build());
         }
 
     }
 
-    // Create notification
+  /*  // Create notification
     private Notification createNotification(String msg, PendingIntent notificationPendingIntent) {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID);
         notificationBuilder
@@ -217,6 +218,6 @@ public class GeofenceReciever extends BroadcastReceiver {
         }
         return notificationBuilder.build();
     }
-
+*/
 }
 
