@@ -567,6 +567,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     }
 
+    private String workId;
     private void sendCheckInData()
     {
 
@@ -599,6 +600,8 @@ public class GetMapLocationActivity extends AppCompatActivity
                 public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
 
                     tvLatLong.setText(response.body().getStatusMessage());
+
+                    workId=response.body().getData().getUser_work_log_id();
                 }
 
                 @Override
@@ -617,19 +620,19 @@ public class GetMapLocationActivity extends AppCompatActivity
         params.setUserId(userid);
         params.setLattitude(String.valueOf(lastLocation.getLatitude()));
         params.setLongitude(String.valueOf(lastLocation.getLongitude()));
+        params.setUserWorkLogId(workId);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
-        System.out.println(cal.getTime());
         // Output "Wed Sep 26 14:23:28 EST 2012"
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String formatted = dateFormat.format(cal.getTime());
+        final String formatted = dateFormat.format(cal.getTime());
         params.setCheckoutTime(formatted);
         Call<CheckOutTimeBean> call = RetrofitClient.getRetrofitClient().checkout(params);
         call.enqueue(new Callback<CheckOutTimeBean>() {
             @Override
             public void onResponse(Call<CheckOutTimeBean> call, Response<CheckOutTimeBean> response) {
 
-                tvLatLong.setText(response.body().getStatusMessage());
+                tvLatLong.setText(formatted);
             }
 
             @Override
