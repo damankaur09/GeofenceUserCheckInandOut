@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.maplocation.R;
-import com.android.maplocation.parceable.OfficeLocations;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -145,7 +145,6 @@ public class GetMapLocationActivity extends AppCompatActivity
         tvLatLong = (TextView) findViewById(R.id.tv_lat_long);
         try {
             latlnglist = getIntent().getParcelableArrayListExtra("OfficeList");
-            userid=getIntent().getParcelableExtra("UserId");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -8,13 +8,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.maplocation.bean.User;
 import com.android.maplocation.geofence.GetMapLocationActivity;
 import com.android.maplocation.R;
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.UserLoginBean;
-import com.android.maplocation.parceable.OfficeLocations;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.registeruser.RegisterUserActivity;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;

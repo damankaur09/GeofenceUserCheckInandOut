@@ -1,4 +1,4 @@
-package com.android.maplocation.parceable;
+package com.android.maplocation.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
