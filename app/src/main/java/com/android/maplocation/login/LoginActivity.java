@@ -82,9 +82,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserLoginBean> call, Response<UserLoginBean> response) {
 
                 Toast.makeText(LoginActivity.this, "Record found", Toast.LENGTH_SHORT).show();
-               /* List<User> userDetail=response.body().getDataBean();
-                String userid=userDetail.get(0).getUser_id();*/
-
                 fetchLocationData();
 
 
@@ -121,7 +118,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
                 mapLocation.putExtra("OfficeList",latlnglist);
-                //mapLocation.putExtra("UserId",userid);
                 startActivity(mapLocation);
             }
 
