@@ -82,7 +82,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserLoginBean> call, Response<UserLoginBean> response) {
 
                 Toast.makeText(LoginActivity.this, "Record found", Toast.LENGTH_SHORT).show();
-                fetchLocationData();
+                String userid=response.body().getBean().getUser_id();
+                fetchLocationData(userid);
 
 
             }
@@ -94,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchLocationData()
+    private void fetchLocationData(final String userid)
     {
         final ArrayList<OfficeLocations> latlnglist=new ArrayList<>();
         OfficeLocationParams params=new OfficeLocationParams();
@@ -119,6 +120,9 @@ public class LoginActivity extends AppCompatActivity {
                 Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
                 mapLocation.putExtra("OfficeList",latlnglist);
                 startActivity(mapLocation);
+                mapLocation.putExtra("id",userid);
+                startActivity(mapLocation);
+
             }
 
             @Override
