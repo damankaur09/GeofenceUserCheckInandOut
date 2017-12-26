@@ -8,12 +8,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.maplocation.bean.User;
 import com.android.maplocation.geofence.GetMapLocationActivity;
 import com.android.maplocation.R;
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.UserLoginBean;
-import com.android.maplocation.pojo.OfficeLocations;
+import com.android.maplocation.parceable.OfficeLocations;
 import com.android.maplocation.registeruser.RegisterUserActivity;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;
@@ -82,6 +83,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserLoginBean> call, Response<UserLoginBean> response) {
 
                 Toast.makeText(LoginActivity.this, "Record found", Toast.LENGTH_SHORT).show();
+               /* List<User> userDetail=response.body().getDataBean();
+                String userid=userDetail.get(0).getUser_id();*/
+
                 fetchLocationData();
 
 
@@ -118,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
                 mapLocation.putExtra("OfficeList",latlnglist);
+                //mapLocation.putExtra("UserId",userid);
                 startActivity(mapLocation);
             }
 
