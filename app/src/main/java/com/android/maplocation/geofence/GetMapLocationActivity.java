@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -64,6 +65,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.android.maplocation.R.drawable.checkinbutton;
+
 
 public class GetMapLocationActivity extends AppCompatActivity
         implements
@@ -89,7 +92,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     private TextView checkIn, checkOut;
     private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
-
+    private String workId;
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
     // Create a Intent send by the notification
@@ -109,8 +112,8 @@ public class GetMapLocationActivity extends AppCompatActivity
         textLong =  findViewById(R.id.lon);
         checkIn =findViewById(R.id.tv_checkin);
         checkOut = findViewById(R.id.tv_checkout);
-        checkIn.setClickable(false);
-
+//        checkIn.setEnabled(false);
+//        checkOut.setEnabled(false);
         // initialize GoogleMaps
         initGMaps();
 
@@ -123,9 +126,12 @@ public class GetMapLocationActivity extends AppCompatActivity
         checkIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 sendCheckInData();
-                checkIn.setClickable(false);
-                checkOut.setClickable(true);
+                checkIn.setBackgroundResource(R.drawable.disablebutton);
+                checkIn.setEnabled(false);
+
+
             }
         });
 
@@ -133,7 +139,8 @@ public class GetMapLocationActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 sendCheckOutData();
-
+                checkOut.setBackgroundResource(R.drawable.disablebutton);
+                checkOut.setEnabled(false);
             }
         });
 
@@ -160,6 +167,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         // Call GoogleApiClient connection when starting the Activity
         googleApiClient.connect();
     }
+
 
     @Override
     protected void onStop() {
@@ -303,6 +311,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
+
         writeActualLocation(location);
     }
 
@@ -312,8 +321,24 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.i(TAG, "onConnected()");
 
         getLastKnownLocation();
+       /* if (enableCheckInAndOut()) {
 
+                checkIn.setBackgroundResource(R.drawable.checkinbutton);
+                checkIn.setEnabled(true);
 
+        } else {
+            if(workId==null|| checkOut.isPressed())
+            {
+
+            }
+            else
+            {
+                checkOut.setBackgroundResource(R.drawable.checkoutbutton);
+                checkOut.setEnabled(true);
+            }
+
+        }
+*/
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
@@ -446,9 +471,9 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
+
         if (geoFencePendingIntent != null)
             return geoFencePendingIntent;
-
         Intent intent = new Intent(this, GeofenceReciever.class);
         intent.setAction("com.android.maplocation.geofence.GeofenceReciever.ACTION_RECIEVE_GEOFENCE");
         return PendingIntent.getBroadcast(
@@ -514,23 +539,18 @@ public class GetMapLocationActivity extends AppCompatActivity
 
 
 
-    private String workId;
+
+    private int sitelocationid;
 
     private void sendCheckInData() {
 
+        isMarkerIn1000();
         CheckInTimeParams params = new CheckInTimeParams();
         params.setTask("addWorklog");
         params.setUserId(SharedPreferencesHandler.getStringValues(this, getString(R.string.pref_user_id)));
         params.setLattitude(String.valueOf(lastLocation.getLatitude()));
         params.setLongitude(String.valueOf(lastLocation.getLongitude()));
-        /*for(int i=0;i<latlnglist.size();i++)
-        {
-            if(((latlnglist.get(i).getLatitude())==lastLocation.getLatitude() &&
-                    ((latlnglist.get(i).getLongitude())==lastLocation.getLongitude() )))
-            {
-                params.setSiteLocationId(latlnglist.get(i).getLocation_id());
-            }
-        }*/
+        params.setSiteLocationId(sitelocationid);
 
         //chck in time
 
@@ -547,6 +567,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
 
                 workId = response.body().getData().getUser_work_log_id();
+                Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -575,7 +596,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         call.enqueue(new Callback<CheckOutTimeBean>() {
             @Override
             public void onResponse(Call<CheckOutTimeBean> call, Response<CheckOutTimeBean> response) {
-
+                Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -625,7 +646,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                     longitude = locations.get(i).getLongitude();
                     locationName=locations.get(i).getSite_name();
                     locationid=locations.get(i).getSitelocation_id();
-                    latlnglist.add(new OfficeLocations(latitude, longitude, locationName ));
+                    latlnglist.add(new OfficeLocations(latitude, longitude, locationName,locationid ));
                 }
                 startGeofence();
                 break;
@@ -640,4 +661,36 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
 
+    private void isMarkerIn1000() {
+        Location locationA = new Location("LocationA");
+        locationA.setLatitude(lastLocation.getLatitude());
+        locationA.setLongitude(lastLocation.getLongitude());
+
+        for (int i = 0; i < latlnglist.size(); i++) {
+            Location locationB = new Location("LocationB");
+            locationB.setLatitude(latlnglist.get(i).getLatitude());
+            locationB.setLongitude(latlnglist.get(i).getLongitude());
+            float distance=locationA.distanceTo(locationB);
+            if (distance<GEOFENCE_RADIUS ) {
+                sitelocationid=latlnglist.get(i).getLocation_id();
+            }
+        }
+    }
+
+    private boolean enableCheckInAndOut() {
+        Location locationA = new Location("LocationA");
+        locationA.setLatitude(lastLocation.getLatitude());
+        locationA.setLongitude(lastLocation.getLongitude());
+
+        for (int i = 0; i < latlnglist.size(); i++) {
+            Location locationB = new Location("LocationB");
+            locationB.setLatitude(latlnglist.get(i).getLatitude());
+            locationB.setLongitude(latlnglist.get(i).getLongitude());
+            float distance=locationA.distanceTo(locationB);
+            if (distance<GEOFENCE_RADIUS ) {
+               return true;
+            }
+        }
+        return false;
+    }
 }

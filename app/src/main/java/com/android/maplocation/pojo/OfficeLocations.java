@@ -15,18 +15,14 @@ public class OfficeLocations implements Parcelable {
     private String locationName;
 
 
-    public OfficeLocations(double latitude, double longitude,String locationName) {
+    public OfficeLocations(double latitude, double longitude,String locationName,int location_id) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.locationName=locationName;
-    }
-
-    public OfficeLocations(double latitude, double longitude,int location_id) {
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.location_id=location_id;
-
     }
+
+
 
     public int getLocation_id() {
         return location_id;

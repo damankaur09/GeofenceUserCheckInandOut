@@ -12,6 +12,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.android.maplocation.R;
 import com.android.maplocation.login.LoginActivity;
@@ -33,9 +34,11 @@ public class GeofenceReciever extends BroadcastReceiver {
     Context context;
     Intent broadcastIntent = new Intent();
     private static final String CHANNEL_ID = "channel_01";
+    private TextView checkin,checkout;
 
     public GeofenceReciever() {
     }
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -79,20 +82,21 @@ public class GeofenceReciever extends BroadcastReceiver {
         // Test that a valid transition was reported
         if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER)
                 || (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)
-                || (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)) {
+               // || (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)
+        ) {
 
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
 
             for (Geofence geofence : triggeringGeofences) {
-                //payload_data=getNotificationMessageFromPreference(geofence.getRequestId());
-                //String strNotificationTitle=getNotificationTitle(payload_data);
+
                 String geofenceTransitionString = getTransitionString(geofenceTransition);
                 String geofenceText = geofenceTransitionString + " : " + geofence.getRequestId();
                 Log.i(TAG, "Geofence Transition:" + geofenceText);
 
                 sendEventDetailNotificatonIntent(geofenceText);
+
 
                 // Create an Intent to broadcast to the app
                 broadcastIntent
@@ -155,7 +159,6 @@ public class GeofenceReciever extends BroadcastReceiver {
         int requestID = (int) System.currentTimeMillis();
         Intent event_detail_intent = new Intent(context, GetMapLocationActivity.class);
         event_detail_intent.putExtra("NotifyTitle", event_name);
-
         PendingIntent pIntent = PendingIntent.getActivity(context, requestID,
                 event_detail_intent, 0);
         NotificationCompat.Builder notificationBuilder;
