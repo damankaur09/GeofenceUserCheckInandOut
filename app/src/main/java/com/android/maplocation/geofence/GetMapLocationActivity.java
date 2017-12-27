@@ -29,9 +29,14 @@ import android.widget.Toast;
 import com.android.maplocation.R;
 import com.android.maplocation.bean.CheckInTimeBean;
 import com.android.maplocation.bean.CheckOutTimeBean;
+import com.android.maplocation.bean.Locations;
+import com.android.maplocation.bean.OfficeLocationBean;
+import com.android.maplocation.login.LoginActivity;
 import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.serviceparams.CheckInTimeParams;
 import com.android.maplocation.serviceparams.CheckOutTimeParams;
+import com.android.maplocation.serviceparams.OfficeLocationParams;
+import com.android.maplocation.utils.SharedPreferencesHandler;
 import com.android.maplocation.webservices.RetrofitClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -103,7 +108,6 @@ public class GetMapLocationActivity extends AppCompatActivity
     private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
     Date checkInTime, checkOutTime;
-    private String userid;
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
@@ -148,14 +152,9 @@ public class GetMapLocationActivity extends AppCompatActivity
         textLong = (TextView) findViewById(R.id.lon);
         checkInButton = (Button) findViewById(R.id.bt_checkin);
         checkOutButton = (Button) findViewById(R.id.bt_checkout);
-
+        checkInButton.setClickable(false);
         tvLatLong = (TextView) findViewById(R.id.tv_lat_long);
-        try {
-            latlnglist = getIntent().getParcelableArrayListExtra("OfficeList");
-            userid=getIntent().getStringExtra("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -172,12 +171,14 @@ public class GetMapLocationActivity extends AppCompatActivity
         createGoogleApi();
 
         mGeofencingClient = LocationServices.getGeofencingClient(this);
-        startGeofence();
+        fetchLocationData();
 
         checkInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendCheckInData();
+                checkInButton.setClickable(false);
+                checkOutButton.setClickable(true);
             }
         });
 
@@ -185,6 +186,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 sendCheckOutData();
+
             }
         });
 
@@ -568,14 +570,14 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
     private String workId;
-    private void sendCheckInData()
-    {
 
-            CheckInTimeParams params = new CheckInTimeParams();
-            params.setTask("addWorklog");
-            params.setUserId(userid);
-            params.setLattitude(String.valueOf(lastLocation.getLatitude()));
-            params.setLongitude(String.valueOf(lastLocation.getLongitude()));
+    private void sendCheckInData() {
+
+        CheckInTimeParams params = new CheckInTimeParams();
+        params.setTask("addWorklog");
+        params.setUserId(SharedPreferencesHandler.getStringValues(this, getString(R.string.pref_user_id)));
+        params.setLattitude(String.valueOf(lastLocation.getLatitude()));
+        params.setLongitude(String.valueOf(lastLocation.getLongitude()));
         /*for(int i=0;i<latlnglist.size();i++)
         {
             if(((latlnglist.get(i).getLatitude())==lastLocation.getLatitude() &&
@@ -585,7 +587,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             }
         }*/
 
-            //chck in time
+        //chck in time
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
@@ -593,31 +595,30 @@ public class GetMapLocationActivity extends AppCompatActivity
         // Output "Wed Sep 26 14:23:28 EST 2012"
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formatted = dateFormat.format(cal.getTime());
-            params.setCheckinTime(formatted);
-            Call<CheckInTimeBean> call = RetrofitClient.getRetrofitClient().checkin(params);
-            call.enqueue(new Callback<CheckInTimeBean>() {
-                @Override
-                public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
+        params.setCheckinTime(formatted);
+        Call<CheckInTimeBean> call = RetrofitClient.getRetrofitClient().checkin(params);
+        call.enqueue(new Callback<CheckInTimeBean>() {
+            @Override
+            public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
 
-                    tvLatLong.setText(response.body().getStatusMessage());
+                tvLatLong.setText(response.body().getStatusMessage());
 
-                    workId=response.body().getData().getUser_work_log_id();
-                }
+                workId = response.body().getData().getUser_work_log_id();
+            }
 
-                @Override
-                public void onFailure(Call<CheckInTimeBean> call, Throwable t) {
+            @Override
+            public void onFailure(Call<CheckInTimeBean> call, Throwable t) {
 
-                }
-            });
+            }
+        });
 
 
     }
 
-    private void sendCheckOutData()
-    {
+    private void sendCheckOutData() {
         CheckOutTimeParams params = new CheckOutTimeParams();
         params.setTask("addWorklog");
-        params.setUserId(userid);
+        params.setUserId(SharedPreferencesHandler.getStringValues(this, getString(R.string.pref_user_id)));
         params.setLattitude(String.valueOf(lastLocation.getLatitude()));
         params.setLongitude(String.valueOf(lastLocation.getLongitude()));
         params.setUserWorkLogId(workId);
@@ -632,7 +633,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<CheckOutTimeBean> call, Response<CheckOutTimeBean> response) {
 
-                tvLatLong.setText(formatted);
+                tvLatLong.setText(response.body().getStatusMessage());
             }
 
             @Override
@@ -642,5 +643,55 @@ public class GetMapLocationActivity extends AppCompatActivity
         });
 
     }
+
+    private void fetchLocationData() {
+
+        OfficeLocationParams params = new OfficeLocationParams();
+        params.setTask("getAllSiteslocation");
+
+        Call<OfficeLocationBean> call = RetrofitClient.getRetrofitClient().location(params);
+
+        call.enqueue(new Callback<OfficeLocationBean>() {
+            @Override
+            public void onResponse(Call<OfficeLocationBean> call, Response<OfficeLocationBean> response) {
+
+                if (response.isSuccessful()) {
+                    onSuccess(response.body());
+                } else {
+                    onError(response.errorBody().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OfficeLocationBean> call, Throwable t) {
+                onError(t.getMessage());
+            }
+        });
+    }
+
+    private void onSuccess(OfficeLocationBean response) {
+        switch (response.getStatus()) {
+            case 200:
+                latlnglist = new ArrayList<>();
+                List<Locations> locations = response.getDataBean();
+
+                double latitude, longitude = 0.0;
+                for (int i = 0; i < locations.size(); i++) {
+                    latitude = locations.get(i).getLattitude();
+                    longitude = locations.get(i).getLongitude();
+                    latlnglist.add(new OfficeLocations(latitude, longitude, "key" + i));
+                }
+                startGeofence();
+                break;
+            case 400:
+                Toast.makeText(this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private void onError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
 
 }

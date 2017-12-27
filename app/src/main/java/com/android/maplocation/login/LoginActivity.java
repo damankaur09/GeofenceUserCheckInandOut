@@ -1,6 +1,7 @@
 package com.android.maplocation.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.android.maplocation.pojo.UserDetails;
 import com.android.maplocation.registeruser.RegisterUserActivity;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
 import com.android.maplocation.serviceparams.UserLoginParams;
+import com.android.maplocation.utils.SharedPreferencesHandler;
 import com.android.maplocation.webservices.RetrofitClient;
 
 import java.util.ArrayList;
@@ -29,22 +31,23 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button btregister,btlogin;
-    EditText etemail,etpassword;
+    private Button btregister, btlogin;
+    EditText etemail, etpassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        btregister=findViewById(R.id.bt_registrer);
-        btlogin=findViewById(R.id.bt_signin);
-        etemail=findViewById(R.id.et_email);
-        etpassword=findViewById(R.id.et_password);
+        btregister = findViewById(R.id.bt_registrer);
+        btlogin = findViewById(R.id.bt_signin);
+        etemail = findViewById(R.id.et_email);
+        etpassword = findViewById(R.id.et_password);
 
         btregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent adduser=new Intent(LoginActivity.this, RegisterUserActivity.class);
+                Intent adduser = new Intent(LoginActivity.this, RegisterUserActivity.class);
                 startActivity(adduser);
             }
         });
@@ -70,68 +73,48 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void userLogin(String email,String password)
-    {
-        UserLoginParams params=new UserLoginParams();
+    private void userLogin(String email, String password) {
+        UserLoginParams params = new UserLoginParams();
         params.setTask("getUserDetails");
         params.setEmail(email);
         params.setPassword(password);
 
-        Call<UserLoginBean> call= RetrofitClient.getRetrofitClient().login(params);
+        Call<UserLoginBean> call = RetrofitClient.getRetrofitClient().login(params);
         call.enqueue(new Callback<UserLoginBean>() {
             @Override
             public void onResponse(Call<UserLoginBean> call, Response<UserLoginBean> response) {
 
-                Toast.makeText(LoginActivity.this, "Record found", Toast.LENGTH_SHORT).show();
-                String userid=response.body().getBean().getUser_id();
-                fetchLocationData(userid);
+                if (response.isSuccessful()) {
+                    onSuccess(response.body());
+                } else {
 
-
+                }
             }
 
             @Override
             public void onFailure(Call<UserLoginBean> call, Throwable t) {
-
+                onError(t.getMessage());
             }
         });
     }
 
-    private void fetchLocationData(final String userid)
-    {
-        final ArrayList<OfficeLocations> latlnglist=new ArrayList<>();
-        OfficeLocationParams params=new OfficeLocationParams();
-        params.setTask("getAllSiteslocation");
+    private void onError(String errorMessage) {
+        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
 
-        Call<OfficeLocationBean> call= RetrofitClient.getRetrofitClient().location(params);
+    private void onSuccess(UserLoginBean response) {
 
-        call.enqueue(new Callback<OfficeLocationBean>() {
-            @Override
-            public void onResponse(Call<OfficeLocationBean> call, Response<OfficeLocationBean> response) {
-                List<Locations> locations=response.body().getDataBean();
-
-                double latitude,longitude=0.0;
-                for (int i=0;i<locations.size();i++)
-                {
-                    latitude= locations.get(i).getLattitude();
-                    longitude= locations.get(i).getLongitude();
-                    latlnglist.add(new OfficeLocations(latitude,longitude,"key"+i));
-
-                }
-
-                Intent mapLocation=new Intent(LoginActivity.this, GetMapLocationActivity.class);
-                mapLocation.putExtra("OfficeList",latlnglist);
-                startActivity(mapLocation);
-                mapLocation.putExtra("id",userid);
-                startActivity(mapLocation);
-
-            }
-
-            @Override
-            public void onFailure(Call<OfficeLocationBean> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
-
-
+        switch (response.getStatus()) {
+            case 200:
+                Toast.makeText(LoginActivity.this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                SharedPreferencesHandler.setStringValues(this, getString(R.string.pref_user_id), response.getBean().getUser_id());
+                SharedPreferencesHandler.setBooleanValues(this, getString(R.string.pref_is_login), true);
+                startActivity(new Intent(this, GetMapLocationActivity.class));
+                break;
+            case 400:
+                Toast.makeText(LoginActivity.this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }
+
