@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,10 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +27,6 @@ import com.android.maplocation.bean.CheckInTimeBean;
 import com.android.maplocation.bean.CheckOutTimeBean;
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
-import com.android.maplocation.login.LoginActivity;
 import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.serviceparams.CheckInTimeParams;
 import com.android.maplocation.serviceparams.CheckOutTimeParams;
@@ -61,11 +55,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -81,7 +73,6 @@ public class GetMapLocationActivity extends AppCompatActivity
         OnMapReadyCallback/*,
             GoogleMap.OnMapClickListener*/,
         GoogleMap.OnMarkerClickListener,
-        AdapterView.OnItemSelectedListener,
         ResultCallback<Status> {
 
     private GeofencingClient mGeofencingClient;
@@ -89,26 +80,15 @@ public class GetMapLocationActivity extends AppCompatActivity
     private static final String TAG = GetMapLocationActivity.class.getSimpleName();
 
     private ArrayList<OfficeLocations> latlnglist = new ArrayList<>();
-    //handler for timer
-    private Handler customHandler = new Handler();
-    long timeInMilliseconds = 0L;
-    long timeSwapBuff = 0L;
-    long updatedTime = 0L;
-    private long startTime = 0L;
-    private long stopTime = 0L;
+
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
     private TextView textLat, textLong;
-    private TextView inTime, outTime;
-    private TextView tvTimer, tvLatLong;
-    private Button checkInButton, checkOutButton;
-    //Add spinner for office location
-    private Spinner spinner;
+    private TextView checkIn, checkOut;
     private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
-    Date checkInTime, checkOutTime;
 
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
@@ -119,51 +99,17 @@ public class GetMapLocationActivity extends AppCompatActivity
         return intent;
     }
 
-    // add timer
 
-    private Runnable updateTimerThread = new Runnable() {
-        @Override
-        public void run() {
-            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
-            updatedTime = timeSwapBuff + timeInMilliseconds;
-
-            int secs = (int) (updatedTime / 1000);
-            int mins = secs / 60;
-            int hours = mins / 60;
-
-
-            secs = secs % 60;
-            int milliseconds = (int) (updatedTime % 1000);
-            tvTimer.setText("" + hours + ":"
-
-                    + String.format("%02d", mins) + ":"
-
-                    + String.format("%02d", secs));
-
-            customHandler.postDelayed(this, 0);
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textLat = (TextView) findViewById(R.id.lat);
-        textLong = (TextView) findViewById(R.id.lon);
-        checkInButton = (Button) findViewById(R.id.bt_checkin);
-        checkOutButton = (Button) findViewById(R.id.bt_checkout);
-        checkInButton.setClickable(false);
-        tvLatLong = (TextView) findViewById(R.id.tv_lat_long);
-
-
-        spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.planets_array, android.R.layout.simple_spinner_item);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        textLat = findViewById(R.id.lat);
+        textLong =  findViewById(R.id.lon);
+        checkIn =findViewById(R.id.tv_checkin);
+        checkOut = findViewById(R.id.tv_checkout);
+        checkIn.setClickable(false);
 
         // initialize GoogleMaps
         initGMaps();
@@ -174,16 +120,16 @@ public class GetMapLocationActivity extends AppCompatActivity
         mGeofencingClient = LocationServices.getGeofencingClient(this);
         fetchLocationData();
 
-        checkInButton.setOnClickListener(new View.OnClickListener() {
+        checkIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendCheckInData();
-                checkInButton.setClickable(false);
-                checkOutButton.setClickable(true);
+                checkIn.setClickable(false);
+                checkOut.setClickable(true);
             }
         });
 
-        checkOutButton.setOnClickListener(new View.OnClickListener() {
+        checkOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendCheckOutData();
@@ -449,10 +395,6 @@ public class GetMapLocationActivity extends AppCompatActivity
 
 
     //fetch locations data to create region
-
-
-    private double latitude = 30.6754302, longitude = 76.7405481;
-
     // Start Geofence creation process
     private void startGeofence() {
         Log.i(TAG, "startGeofence()");
@@ -461,7 +403,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
 
         for (int i = 0; i < latlnglist.size(); i++) {
-            Geofence geofence = createGeofence(latlnglist.get(i).getLatitude(), latlnglist.get(i).getLongitude(), latlnglist.get(i).getKey(), GEOFENCE_RADIUS);
+            Geofence geofence = createGeofence(latlnglist.get(i).getLatitude(), latlnglist.get(i).getLongitude(), latlnglist.get(i).getLocationName(), GEOFENCE_RADIUS);
             geofencesList.add(geofence);
         }
         GeofencingRequest geofenceRequest = createGeofenceRequest(geofencesList);
@@ -571,16 +513,6 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        // TODO Auto-generated method stub
-        Toast.makeText(this, "YOUR SELECTION IS : " + adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
 
     private String workId;
 
@@ -614,8 +546,6 @@ public class GetMapLocationActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
 
-                tvLatLong.setText(response.body().getStatusMessage());
-
                 workId = response.body().getData().getUser_work_log_id();
             }
 
@@ -646,7 +576,6 @@ public class GetMapLocationActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<CheckOutTimeBean> call, Response<CheckOutTimeBean> response) {
 
-                tvLatLong.setText(response.body().getStatusMessage());
             }
 
             @Override
@@ -689,10 +618,14 @@ public class GetMapLocationActivity extends AppCompatActivity
                 List<Locations> locations = response.getDataBean();
 
                 double latitude, longitude = 0.0;
+                String locationName=null;
+                int locationid=0;
                 for (int i = 0; i < locations.size(); i++) {
                     latitude = locations.get(i).getLattitude();
                     longitude = locations.get(i).getLongitude();
-                    latlnglist.add(new OfficeLocations(latitude, longitude, "key" + i));
+                    locationName=locations.get(i).getSite_name();
+                    locationid=locations.get(i).getSitelocation_id();
+                    latlnglist.add(new OfficeLocations(latitude, longitude, locationName ));
                 }
                 startGeofence();
                 break;

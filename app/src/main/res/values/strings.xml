@@ -23,8 +23,8 @@
     </string>
 
     <!-- Transition type strings -->
-    <string name="geofence_transition_entered">Entered office location</string>
-    <string name="geofence_transition_exited">Exited office Location</string>
+    <string name="geofence_transition_entered">Entered in</string>
+    <string name="geofence_transition_exited">Exited from</string>
 
     <string name="unknown_geofence_transition">Unknown Transition</string>
 

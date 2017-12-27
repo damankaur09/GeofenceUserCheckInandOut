@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -40,70 +41,66 @@
             android:text="Long: " />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
+<!--
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/bt_checkin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="In"
-            android:textColor="#000000"
-            android:visibility="visible" />
-
-       <!-- <TextView
-            android:id="@+id/tv_checkintime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="InTime" />
--->
-        <Button
+            android:layout_gravity="bottom|end"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"/>
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/bt_checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Out"
-            android:textColor="#000000"
-            android:visibility="visible" />
+            android:layout_gravity="bottom|start"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />-->
 
-
-        <!--<TextView
-            android:id="@+id/tv_checkouttime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="OutTime" />
--->
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/office"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-   <!-- <TextView
-        android:id="@+id/tv_timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00:00"
-        android:layout_gravity="center"/>
--->
-    <TextView
-        android:id="@+id/tv_lat_long"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="latlng"
-        android:layout_gravity="center"/>
 
 
     <!--GoogleMap fragment-->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_checkin"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginStart="60dp"
+        android:background="@drawable/checkinbutton"
+        android:text="IN"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_checkout"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_checkout"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="60dp"
+        android:text="OUT"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/checkoutbutton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

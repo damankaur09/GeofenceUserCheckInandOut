@@ -12,21 +12,28 @@ public class OfficeLocations implements Parcelable {
     private double longitude;
     private double latitude;
     private int location_id;
-    private String key;
+    private String locationName;
 
-    public OfficeLocations(double latitude, double longitude,String key) {
+
+    public OfficeLocations(double latitude, double longitude,String locationName) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.locationName=locationName;
+    }
+
+    public OfficeLocations(double latitude, double longitude,int location_id) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.location_id=location_id;
-        this.key=key;
+
     }
 
     public int getLocation_id() {
         return location_id;
     }
 
-    public String getKey() {
-        return key;
+    public String getLocationName() {
+        return locationName;
     }
 
     public double getLongitude() {
@@ -48,14 +55,14 @@ public class OfficeLocations implements Parcelable {
         dest.writeDouble(this.longitude);
         dest.writeDouble(this.latitude);
         dest.writeInt(this.location_id);
-        dest.writeString(this.key);
+        dest.writeString(this.locationName);
     }
 
     protected OfficeLocations(Parcel in) {
         this.longitude = in.readDouble();
         this.latitude = in.readDouble();
         this.location_id=in.readInt();
-        this.key = in.readString();
+        this.locationName=in.readString();
     }
 
     public static final Parcelable.Creator<OfficeLocations> CREATOR = new Parcelable.Creator<OfficeLocations>() {
