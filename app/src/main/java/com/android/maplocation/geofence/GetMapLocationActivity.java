@@ -569,7 +569,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         params.setLattitude(String.valueOf(lastLocation.getLatitude()));
         params.setLongitude(String.valueOf(lastLocation.getLongitude()));
         params.setSiteLocationId(sitelocationid);
-
+        params.setUserTimeZone("Asia/Kolkata");
         //chck in time
 
         Calendar cal = Calendar.getInstance();
@@ -605,6 +605,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         params.setLattitude(String.valueOf(lastLocation.getLatitude()));
         params.setLongitude(String.valueOf(lastLocation.getLongitude()));
         params.setUserWorkLogId(workId);
+        params.setUserTimeZone("Asia/Kolkata");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
         // Output "Wed Sep 26 14:23:28 EST 2012"
