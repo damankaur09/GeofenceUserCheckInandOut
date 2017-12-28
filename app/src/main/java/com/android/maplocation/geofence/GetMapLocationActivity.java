@@ -94,7 +94,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     private MapFragment mapFragment;
     private String workId;
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
-
+    private int userStatus=1;
     // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
         Intent intent = new Intent(context, GetMapLocationActivity.class);
@@ -112,8 +112,11 @@ public class GetMapLocationActivity extends AppCompatActivity
         textLong =  findViewById(R.id.lon);
         checkIn =findViewById(R.id.tv_checkin);
         checkOut = findViewById(R.id.tv_checkout);
-//        checkIn.setEnabled(false);
-//        checkOut.setEnabled(false);
+        checkIn.setBackgroundResource(R.drawable.disablebutton);
+        checkIn.setEnabled(false);
+        checkOut.setBackgroundResource(R.drawable.disablebutton);
+        checkOut.setEnabled(false);
+
         // initialize GoogleMaps
         initGMaps();
 
@@ -311,8 +314,23 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
-
         writeActualLocation(location);
+
+        if(userStatus==1 && enableCheckInAndOut()==true)
+        {
+            checkIn.setEnabled(true);
+            checkIn.setBackgroundResource(R.drawable.checkinbutton);
+
+        }
+        else if((userStatus==2) &&(enableCheckInAndOut() || !enableCheckInAndOut()) )
+        {
+            checkOut.setEnabled(true);
+            checkOut.setBackgroundResource(R.drawable.checkoutbutton);
+        }
+        else if(userStatus==3 && !enableCheckInAndOut())
+        {
+                userStatus=1;
+        }
     }
 
     // GoogleApiClient.ConnectionCallbacks connected
@@ -494,6 +512,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                         @Override
                         public void onSuccess(Void aVoid) {
                             drawGeofence();
+
                         }
                     });
 //            LocationServices.GeofencingApi.addGeofences(
@@ -509,14 +528,12 @@ public class GetMapLocationActivity extends AppCompatActivity
     public void onResult(@NonNull Status status) {
         Log.i(TAG, "onResult: " + status);
         if (status.isSuccess()) {
-
-            //saveGeofence();
             drawGeofence();
+
         } else {
             // inform about failmarkerForGeofence
             System.out.println("GetMapLocationActivity.onResult--" + status.isSuccess());
-            /*saveGeofence();
-            drawGeofence();*/
+
         }
     }
 
@@ -544,6 +561,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     private void sendCheckInData() {
 
+        userStatus=2;
         isMarkerIn1000();
         CheckInTimeParams params = new CheckInTimeParams();
         params.setTask("addWorklog");
@@ -580,6 +598,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
     private void sendCheckOutData() {
+        userStatus=3;
         CheckOutTimeParams params = new CheckOutTimeParams();
         params.setTask("addWorklog");
         params.setUserId(SharedPreferencesHandler.getStringValues(this, getString(R.string.pref_user_id)));
