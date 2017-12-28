@@ -583,7 +583,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         //chck in time
 
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
+
         System.out.println(cal.getTime());
         // Output "Wed Sep 26 14:23:28 EST 2012"
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -617,7 +617,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         params.setUserWorkLogId(workId);
         params.setUserTimeZone("Asia/Kolkata");
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
+
         // Output "Wed Sep 26 14:23:28 EST 2012"
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final String formatted = dateFormat.format(cal.getTime());
