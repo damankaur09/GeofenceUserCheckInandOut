@@ -12,34 +12,7 @@
     tools:context="com.android.maplocation.geofence.GetMapLocationActivity">
 
     <!-- Line with Latitude and Longitude -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/colorPrimaryDark"
-        android:paddingTop="5dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingBottom="5dp">
 
-        <!--Latitude-->
-        <TextView
-            android:id="@+id/lat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_weight="0.5"
-            android:text="Lat: " />
-
-        <!--Longitude-->
-        <TextView
-            android:id="@+id/lon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_weight="0.5"
-            android:text="Long: " />
-    </LinearLayout>
 
 <!--
         <android.support.design.widget.FloatingActionButton
@@ -69,6 +42,47 @@
         tools:layout_editor_absoluteX="50dp"
         tools:layout_editor_absoluteY="0dp" />
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+
+        android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.509"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--Latitude-->
+        <ImageView
+            android:id="@+id/image_view_reports"
+            android:layout_width="10dp"
+            android:layout_height="30dp"
+            android:layout_weight="0.5"
+            app:srcCompat="@drawable/reports" />
+
+        <TextView
+            android:id="@+id/lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Lat: "
+            android:paddingLeft="5dp"
+            android:textColor="@color/white" />
+
+        <!--Longitude-->
+        <TextView
+            android:id="@+id/lon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Long: "
+            android:textColor="@color/white" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_checkin"
         android:layout_width="80dp"
@@ -85,6 +99,7 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_checkout"
+        app:layout_constraintHorizontal_bias="0.435"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView

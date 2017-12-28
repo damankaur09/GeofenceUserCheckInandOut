@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import com.android.maplocation.bean.CheckOutTimeBean;
 import com.android.maplocation.bean.Locations;
 import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.pojo.OfficeLocations;
+import com.android.maplocation.reports.UserTimeReport;
 import com.android.maplocation.serviceparams.CheckInTimeParams;
 import com.android.maplocation.serviceparams.CheckOutTimeParams;
 import com.android.maplocation.serviceparams.OfficeLocationParams;
@@ -87,7 +90,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-
+    private ImageView reportsImage;
     private TextView textLat, textLong;
     private TextView checkIn, checkOut;
     private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
@@ -116,6 +119,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         checkIn.setEnabled(false);
         checkOut.setBackgroundResource(R.drawable.disablebutton);
         checkOut.setEnabled(false);
+        reportsImage=findViewById(R.id.image_view_reports);
 
         // initialize GoogleMaps
         initGMaps();
@@ -147,7 +151,13 @@ public class GetMapLocationActivity extends AppCompatActivity
             }
         });
 
-
+        reportsImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(GetMapLocationActivity.this, UserTimeReport.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
