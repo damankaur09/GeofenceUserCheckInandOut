@@ -10,9 +10,7 @@ import android.widget.TextView;
 import com.android.maplocation.R;
 import com.android.maplocation.pojo.ReportData;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by Daman on 12/29/2017.
@@ -63,6 +61,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
             holder.tv_intime.setText(data.get(position).getInTime());
             holder.tv_outime.setText(data.get(position).getOutTime());
             holder.tv_hours.setText(data.get(position).getTotalhours());
+
 
         } catch (Exception e) {
             e.printStackTrace();
