@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
@@ -98,6 +99,13 @@ public class GetMapLocationActivity extends AppCompatActivity
     private String workId;
     private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
     private int userStatus=1;
+
+    //permissions
+    private static final int PERMISSION_ALL=1;
+    private String [] permission=
+            {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET};
+
+
     // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
         Intent intent = new Intent(context, GetMapLocationActivity.class);
@@ -216,7 +224,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.d(TAG, "checkPermission()");
         // Ask for permission if it wasn't granted yet
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED);
+                == PackageManager.PERMISSION_GRANTED)  ;
     }
 
     // Asks for permission
@@ -240,6 +248,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission granted
                     getLastKnownLocation();
+
 
                 } else {
                     // Permission denied
@@ -296,20 +305,30 @@ public class GetMapLocationActivity extends AppCompatActivity
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
-    /*@Override
+  /*  @Override
     protected void onResume() {
         super.onResume();
-        if (googleApiClient.isConnected()) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
             startLocationUpdates();
         }
+
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
-    }
-*/
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            stopLocationUpdates();
+        }
+
+    }*/
     private void stopLocationUpdates() {
         try {
             if (googleApiClient.isConnected())
@@ -349,24 +368,6 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.i(TAG, "onConnected()");
 
         getLastKnownLocation();
-       /* if (enableCheckInAndOut()) {
-
-                checkIn.setBackgroundResource(R.drawable.checkinbutton);
-                checkIn.setEnabled(true);
-
-        } else {
-            if(workId==null|| checkOut.isPressed())
-            {
-
-            }
-            else
-            {
-                checkOut.setBackgroundResource(R.drawable.checkoutbutton);
-                checkOut.setEnabled(true);
-            }
-
-        }
-*/
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
@@ -678,7 +679,10 @@ public class GetMapLocationActivity extends AppCompatActivity
                     locationid=locations.get(i).getSitelocation_id();
                     latlnglist.add(new OfficeLocations(latitude, longitude, locationName,locationid ));
                 }
-                startGeofence();
+
+                    startGeofence();
+
+
                 break;
             case 400:
                 Toast.makeText(this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
@@ -723,4 +727,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         }
         return false;
     }
+
+
+
 }

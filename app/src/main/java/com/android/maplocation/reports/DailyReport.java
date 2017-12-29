@@ -42,6 +42,8 @@ public class DailyReport extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         tableLayout=view.findViewById(R.id.tb_dailyreport);
+        addHeaders();
+        addData();
 
     }
 
@@ -55,7 +57,7 @@ public class DailyReport extends Fragment {
                 LayoutParams.WRAP_CONTENT));
 
         /** Creating a TextView to add to the row **/
-        tvInTime = new TextView(getActivity());
+        TextView tvInTime = new TextView(getActivity());
         tvInTime.setText("In Time");
         tvInTime.setTextColor(Color.GRAY);
         tvInTime.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -63,7 +65,7 @@ public class DailyReport extends Fragment {
         tr.addView(tvInTime);  // Adding textView to tablerow.
 
         /** Creating another textview **/
-        tvOutTime = new TextView(getActivity());
+        TextView tvOutTime = new TextView(getActivity());
         tvOutTime.setText("Out Time");
         tvOutTime.setTextColor(Color.GRAY);
         tvOutTime.setPadding(5, 5, 5, 0);
@@ -76,6 +78,67 @@ public class DailyReport extends Fragment {
                 LayoutParams.FILL_PARENT,
                 LayoutParams.WRAP_CONTENT));
 
+        // we are adding two textviews for the divider because we have two columns
+        tr = new TableRow(getActivity());
+        tr.setLayoutParams(new LayoutParams(
+                LayoutParams.FILL_PARENT,
+                LayoutParams.WRAP_CONTENT));
+
+        /** Creating another textview **/
+        TextView divider = new TextView(getActivity());
+        divider.setText("-----------------");
+        divider.setTextColor(Color.GREEN);
+        divider.setPadding(5, 0, 0, 0);
+        divider.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        tr.addView(divider); // Adding textView to tablerow.
+
+        TextView divider2 = new TextView(getActivity());
+        divider2.setText("-------------------------");
+        divider2.setTextColor(Color.GREEN);
+        divider2.setPadding(5, 0, 0, 0);
+        divider2.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        tr.addView(divider2); // Adding textView to tablerow.
+
+        // Add the TableRow to the TableLayout
+        tableLayout.addView(tr, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT,
+                LayoutParams.WRAP_CONTENT));
+
+    }
+
+
+    /** This function add the data to the table **/
+    public void addData(){
+
+        for (int i = 0; i < inTime.length; i++)
+        {
+            /** Create a TableRow dynamically **/
+            tr = new TableRow(getActivity());
+            tr.setLayoutParams(new LayoutParams(
+                    LayoutParams.FILL_PARENT,
+                    LayoutParams.WRAP_CONTENT));
+
+            /** Creating a TextView to add to the row **/
+            tvInTime = new TextView(getActivity());
+            tvInTime.setText(inTime[i]);
+            tvInTime.setTextColor(Color.RED);
+            tvInTime.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+            tvInTime.setPadding(5, 5, 5, 5);
+            tr.addView(tvInTime);  // Adding textView to tablerow.
+
+            /** Creating another textview **/
+            tvOutTime = new TextView(getActivity());
+            tvOutTime.setText(outTime[i]);
+            tvOutTime.setTextColor(Color.GREEN);
+            tvOutTime.setPadding(5, 5, 5, 5);
+            tvOutTime.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+            tr.addView(tvOutTime); // Adding textView to tablerow.
+
+            // Add the TableRow to the TableLayout
+            tableLayout.addView(tr, new TableLayout.LayoutParams(
+                    LayoutParams.FILL_PARENT,
+                    LayoutParams.WRAP_CONTENT));
+        }
     }
 
 }
