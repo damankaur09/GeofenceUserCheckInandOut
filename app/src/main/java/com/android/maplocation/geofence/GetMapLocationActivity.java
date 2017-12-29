@@ -420,10 +420,18 @@ public class GetMapLocationActivity extends AppCompatActivity
             checkIn.setEnabled(true);
             checkIn.setBackgroundResource(R.drawable.checkinbutton);
 
-        } else if ((userStatus == 2) && (enableCheckInAndOut() || !enableCheckInAndOut())) {
+
+        }
+
+        else if(userStatus == 1 && !enableCheckInAndOut())
+        {
+            checkIn.setEnabled(false);
+            checkIn.setBackgroundResource(R.drawable.disablebutton);
+        }
+        else if ((userStatus == 2) && (enableCheckInAndOut() || !enableCheckInAndOut())) {
             checkOut.setEnabled(true);
             checkOut.setBackgroundResource(R.drawable.checkoutbutton);
-        } else if (userStatus == 3 && !enableCheckInAndOut()) {
+        } else if (userStatus == 3 && (enableCheckInAndOut() || !enableCheckInAndOut())) {
             userStatus = 1;
         }
     }
@@ -434,24 +442,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.i(TAG, "onConnected()");
 
         getLastKnownLocation();
-       /* if (enableCheckInAndOut()) {
 
-                checkIn.setBackgroundResource(R.drawable.checkinbutton);
-                checkIn.setEnabled(true);
-
-        } else {
-            if(workId==null|| checkOut.isPressed())
-            {
-
-            }
-            else
-            {
-                checkOut.setBackgroundResource(R.drawable.checkoutbutton);
-                checkOut.setEnabled(true);
-            }
-
-        }
-*/
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
