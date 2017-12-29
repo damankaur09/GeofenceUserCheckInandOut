@@ -15,9 +15,11 @@
         android:theme="@style/AppTheme">
         <service android:name=".geofence.GeofenceTransitionService" />
 
-        <receiver android:name=".geofence.GeofenceReciever">
+        <receiver android:name=".geofence.GpsLocationReceiver"
+            android:enabled="true">
             <intent-filter>
-                <action android:name="com.android.maplocation.geofence.GeofenceReciever.ACTION_RECIEVE_GEOFENCE" />
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 

@@ -115,7 +115,6 @@ public class GetMapLocationActivity extends AppCompatActivity
     private TextView checkIn, checkOut;
     private MapFragment mapFragment;
     private String workId;
-
     private int userStatus = 1;
     private String[] permission =
             {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
@@ -124,6 +123,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     private Marker geoFenceMarker;
     private PendingIntent geoFencePendingIntent;
     private int sitelocationid;
+    private GpsLocationReceiver locationReceiver=new GpsLocationReceiver();
 
     private AlertDialog dialog;
 
@@ -153,6 +153,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         registerReceiver(mGpsDetectionReceiver, new IntentFilter("gpsDetectionIntent"));
+        registerReceiver(locationReceiver, new IntentFilter("android.location.PROVIDERS_CHANGED"));
 
         textLat = findViewById(R.id.lat);
         textLong = findViewById(R.id.lon);
@@ -322,12 +323,6 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     // Start location Updates
     private void startLocationUpdates() {
-
-
-
-
-
-
         if (checkPermission()) {
 
             Log.i(TAG, "startLocationUpdates()");
@@ -348,7 +343,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
 
                 @Override
-                public void onResult(LocationSettingsResult result) {
+                public void onResult(@NonNull LocationSettingsResult result) {
                     final Status status = result.getStatus();
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
@@ -843,6 +838,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mGpsDetectionReceiver);
+        unregisterReceiver(locationReceiver);
     }
 
 
