@@ -10,7 +10,9 @@ import android.widget.TextView;
 import com.android.maplocation.R;
 import com.android.maplocation.pojo.ReportData;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Daman on 12/29/2017.
@@ -51,7 +53,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
+            /*Calendar cal = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE");
+            String formatted = dateFormat.format( cal.getTime());
 
+            holder.tv_date.setText(formatted);*/
             holder.tv_date.setText(data.get(position).getDate());
             holder.tv_locationname.setText(data.get(position).getLocation());
             holder.tv_intime.setText(data.get(position).getInTime());

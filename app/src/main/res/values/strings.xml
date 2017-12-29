@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Geofencing</string>
     <string name="office">Choose office</string>
-
+    <string name="msg_enable_gps">Enable GPS</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

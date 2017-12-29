@@ -1,27 +1,31 @@
 package com.android.maplocation.geofence;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +44,7 @@ import com.android.maplocation.utils.SharedPreferencesHandler;
 import com.android.maplocation.webservices.RetrofitClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
@@ -48,6 +53,9 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -60,6 +68,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,8 +78,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.android.maplocation.R.drawable.checkinbutton;
-
 
 public class GetMapLocationActivity extends AppCompatActivity
         implements
@@ -79,31 +86,58 @@ public class GetMapLocationActivity extends AppCompatActivity
         LocationListener,
         OnMapReadyCallback/*,
             GoogleMap.OnMapClickListener*/,
-        GoogleMap.OnMarkerClickListener,
-        ResultCallback<Status> {
-
-    private GeofencingClient mGeofencingClient;
+        GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = GetMapLocationActivity.class.getSimpleName();
-
+    private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+    //permissions
+    private static final int PERMISSION_ALL = 1;
+    private static final long GEO_DURATION = 60 * 60 * 1000;
+    private static final String GEOFENCE_REQ_ID = "My Geofence";
+    //Radius draw for the selected location
+    private static final float GEOFENCE_RADIUS = 1000.0f; // in meters
+    private final static int REQUEST_CHECK_SETTINGS_GPS = 0x1;
+    private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 0x2;
+    private final int REQ_PERMISSION = 999;
+    // Defined in mili seconds.
+    // This number in extremely low, and should be used only for debug
+    private final int UPDATE_INTERVAL = 1000;
+    private final int FASTEST_INTERVAL = 900;
+    private final int GEOFENCE_REQ_CODE = 0;
+    private GeofencingClient mGeofencingClient;
     private ArrayList<OfficeLocations> latlnglist = new ArrayList<>();
-
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private ImageView reportsImage;
     private TextView textLat, textLong;
     private TextView checkIn, checkOut;
-    private static final String[] paths = {"My office", "Vishakha Home", "Daman Home"};
     private MapFragment mapFragment;
     private String workId;
-    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
-    private int userStatus=1;
 
-    //permissions
-    private static final int PERMISSION_ALL=1;
-    private String [] permission=
-            {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET};
+    private int userStatus = 1;
+    private String[] permission =
+            {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
+    private LocationRequest locationRequest;
+    private Marker locationMarker;
+    private Marker geoFenceMarker;
+    private PendingIntent geoFencePendingIntent;
+    private int sitelocationid;
+
+    private AlertDialog dialog;
+
+    private final BroadcastReceiver mGpsDetectionReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!intent.getBooleanExtra("isGpsEnabled", false)) {
+                showDialogForGPS(getString(R.string.msg_enable_gps));
+            } else {
+                dismissGpsDialog();
+            }
+        }
+    };
 
 
     // Create a Intent send by the notification
@@ -113,21 +147,22 @@ public class GetMapLocationActivity extends AppCompatActivity
         return intent;
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        registerReceiver(mGpsDetectionReceiver, new IntentFilter("gpsDetectionIntent"));
+
         textLat = findViewById(R.id.lat);
-        textLong =  findViewById(R.id.lon);
-        checkIn =findViewById(R.id.tv_checkin);
+        textLong = findViewById(R.id.lon);
+        checkIn = findViewById(R.id.tv_checkin);
         checkOut = findViewById(R.id.tv_checkout);
         checkIn.setBackgroundResource(R.drawable.disablebutton);
         checkIn.setEnabled(false);
         checkOut.setBackgroundResource(R.drawable.disablebutton);
         checkOut.setEnabled(false);
-        reportsImage=findViewById(R.id.image_view_reports);
+        reportsImage = findViewById(R.id.image_view_reports);
 
         // initialize GoogleMaps
         initGMaps();
@@ -136,6 +171,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         createGoogleApi();
 
         mGeofencingClient = LocationServices.getGeofencingClient(this);
+
         fetchLocationData();
 
         checkIn.setOnClickListener(new View.OnClickListener() {
@@ -162,12 +198,11 @@ public class GetMapLocationActivity extends AppCompatActivity
         reportsImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(GetMapLocationActivity.this, UserTimeReport.class);
+                Intent intent = new Intent(GetMapLocationActivity.this, UserTimeReport.class);
                 startActivity(intent);
             }
         });
     }
-
 
     // Create GoogleApiClient instance
     private void createGoogleApi() {
@@ -189,7 +224,6 @@ public class GetMapLocationActivity extends AppCompatActivity
         googleApiClient.connect();
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -207,7 +241,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch ( item.getItemId() ) {
+        switch (item.getItemId()) {
             case R.id.logout: {
                 SharedPreferencesHandler.clearAll(this);
                 finish();
@@ -217,18 +251,18 @@ public class GetMapLocationActivity extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-    private final int REQ_PERMISSION = 999;
 
     // Check for permission to access Location
     private boolean checkPermission() {
         Log.d(TAG, "checkPermission()");
         // Ask for permission if it wasn't granted yet
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED)  ;
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     // Asks for permission
     private void askPermission() {
+
         Log.d(TAG, "askPermission()");
         ActivityCompat.requestPermissions(
                 this,
@@ -248,7 +282,6 @@ public class GetMapLocationActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission granted
                     getLastKnownLocation();
-
 
                 } else {
                     // Permission denied
@@ -287,48 +320,92 @@ public class GetMapLocationActivity extends AppCompatActivity
         return false;
     }
 
-    private LocationRequest locationRequest;
-    // Defined in mili seconds.
-    // This number in extremely low, and should be used only for debug
-    private final int UPDATE_INTERVAL = 1000;
-    private final int FASTEST_INTERVAL = 900;
-
     // Start location Updates
     private void startLocationUpdates() {
-        Log.i(TAG, "startLocationUpdates()");
-        locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(UPDATE_INTERVAL)
-                .setFastestInterval(FASTEST_INTERVAL);
 
-        if (checkPermission())
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
 
-  /*  @Override
-    protected void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
 
-            startLocationUpdates();
+
+
+
+        if (checkPermission()) {
+
+            Log.i(TAG, "startLocationUpdates()");
+            locationRequest = LocationRequest.create()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(UPDATE_INTERVAL)
+                    .setFastestInterval(FASTEST_INTERVAL);
+
+
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(locationRequest);
+            builder.setAlwaysShow(true);
+            LocationServices.FusedLocationApi
+                    .requestLocationUpdates(googleApiClient, locationRequest, this);
+            PendingResult<LocationSettingsResult> result =
+                    LocationServices.SettingsApi
+                            .checkLocationSettings(googleApiClient, builder.build());
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+
+                @Override
+                public void onResult(LocationSettingsResult result) {
+                    final Status status = result.getStatus();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            // All location settings are satisfied.
+                            // You can initialize location requests here.
+                            int permissionLocation = ContextCompat
+                                    .checkSelfPermission(GetMapLocationActivity.this,
+                                            Manifest.permission.ACCESS_FINE_LOCATION);
+                            if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                                lastLocation = LocationServices.FusedLocationApi
+                                        .getLastLocation(googleApiClient);
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            // Location settings are not satisfied.
+                            // But could be fixed by showing the user a dialog.
+                            try {
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                // Ask to turn on GPS automatically
+                                status.startResolutionForResult(GetMapLocationActivity.this,
+                                        REQUEST_CHECK_SETTINGS_GPS);
+                            } catch (IntentSender.SendIntentException e) {
+                                // Ignore the error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            // Location settings are not satisfied.
+                            // However, we have no way
+                            // to fix the
+                            // settings so we won't show the dialog.
+                            // finish();
+                            break;
+                    }
+                }
+            });
+
+
         }
 
 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (googleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+//        stopLocationUpdates();
+    }
 
-            stopLocationUpdates();
-        }
-
-    }*/
     private void stopLocationUpdates() {
         try {
             if (googleApiClient.isConnected())
@@ -344,21 +421,15 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
         writeActualLocation(location);
-
-        if(userStatus==1 && enableCheckInAndOut()==true)
-        {
+        if (userStatus == 1 && enableCheckInAndOut()) {
             checkIn.setEnabled(true);
             checkIn.setBackgroundResource(R.drawable.checkinbutton);
 
-        }
-        else if((userStatus==2) &&(enableCheckInAndOut() || !enableCheckInAndOut()) )
-        {
+        } else if ((userStatus == 2) && (enableCheckInAndOut() || !enableCheckInAndOut())) {
             checkOut.setEnabled(true);
             checkOut.setBackgroundResource(R.drawable.checkoutbutton);
-        }
-        else if(userStatus==3 && !enableCheckInAndOut())
-        {
-                userStatus=1;
+        } else if (userStatus == 3 && !enableCheckInAndOut()) {
+            userStatus = 1;
         }
     }
 
@@ -368,6 +439,24 @@ public class GetMapLocationActivity extends AppCompatActivity
         Log.i(TAG, "onConnected()");
 
         getLastKnownLocation();
+       /* if (enableCheckInAndOut()) {
+
+                checkIn.setBackgroundResource(R.drawable.checkinbutton);
+                checkIn.setEnabled(true);
+
+        } else {
+            if(workId==null|| checkOut.isPressed())
+            {
+
+            }
+            else
+            {
+                checkOut.setBackgroundResource(R.drawable.checkoutbutton);
+                checkOut.setEnabled(true);
+            }
+
+        }
+*/
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
@@ -386,18 +475,21 @@ public class GetMapLocationActivity extends AppCompatActivity
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation()");
         if (checkPermission()) {
+            drawGeofence();
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
                 Log.i(TAG, "LasKnown location. " +
                         "Long: " + lastLocation.getLongitude() +
                         " | Lat: " + lastLocation.getLatitude());
-                writeLastLocation();
                 startLocationUpdates();
             } else {
                 Log.w(TAG, "No location retrieved yet");
                 startLocationUpdates();
             }
-        } else askPermission();
+        } else {
+            askPermission();
+        }
+
     }
 
     private void writeActualLocation(Location location) {
@@ -410,8 +502,6 @@ public class GetMapLocationActivity extends AppCompatActivity
     private void writeLastLocation() {
         writeActualLocation(lastLocation);
     }
-
-    private Marker locationMarker;
 
     private void markerLocation(LatLng latLng) {
         Log.i(TAG, "markerLocation(" + latLng + ")");
@@ -430,9 +520,6 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     }
 
-
-    private Marker geoFenceMarker;
-
     private void markerForGeofence(LatLng latLng) {
         Log.i(TAG, "markerForGeofence(" + latLng + ")");
         String title = latLng.latitude + ", " + latLng.longitude;
@@ -446,7 +533,6 @@ public class GetMapLocationActivity extends AppCompatActivity
 
         }
     }
-
 
     //fetch locations data to create region
     // Start Geofence creation process
@@ -465,12 +551,6 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     }
 
-    private static final long GEO_DURATION = 60 * 60 * 1000;
-    private static final String GEOFENCE_REQ_ID = "My Geofence";
-    //Radius draw for the selected location
-    private static final float GEOFENCE_RADIUS = 1000.0f; // in meters
-
-
     // Create a Geofence
     private Geofence createGeofence(double latitude, double longitude, String geoKey, float radius) {
         Log.d(TAG, "createGeofence---" + geoKey);
@@ -479,8 +559,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                 .setCircularRegion(latitude, longitude, radius)
                 .setExpirationDuration(GEO_DURATION)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER
-                                | Geofence.GEOFENCE_TRANSITION_EXIT
-//                        | Geofence.GEOFENCE_TRANSITION_DWELL
+                        | Geofence.GEOFENCE_TRANSITION_EXIT
                 )
                 .setLoiteringDelay(30000)
                 .build();
@@ -494,9 +573,6 @@ public class GetMapLocationActivity extends AppCompatActivity
                 .addGeofences(geofence)
                 .build();
     }
-
-    private PendingIntent geoFencePendingIntent;
-    private final int GEOFENCE_REQ_CODE = 0;
 
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
@@ -522,30 +598,12 @@ public class GetMapLocationActivity extends AppCompatActivity
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            drawGeofence();
+//                            drawGeofence();
 
                         }
                     });
-//            LocationServices.GeofencingApi.addGeofences(
-//                    googleApiClient,
-//                    request,
-//                    createGeofencePendingIntent()
-//            ).setResultCallback(this);
         }
 
-    }
-
-    @Override
-    public void onResult(@NonNull Status status) {
-        Log.i(TAG, "onResult: " + status);
-        if (status.isSuccess()) {
-            drawGeofence();
-
-        } else {
-            // inform about failmarkerForGeofence
-            System.out.println("GetMapLocationActivity.onResult--" + status.isSuccess());
-
-        }
     }
 
     // Draw Geofence circle on GoogleMap
@@ -565,14 +623,9 @@ public class GetMapLocationActivity extends AppCompatActivity
         }
     }
 
-
-
-
-    private int sitelocationid;
-
     private void sendCheckInData() {
 
-        userStatus=2;
+        userStatus = 2;
         isMarkerIn1000();
         CheckInTimeParams params = new CheckInTimeParams();
         params.setTask("addWorklog");
@@ -609,7 +662,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
     private void sendCheckOutData() {
-        userStatus=3;
+        userStatus = 3;
         CheckOutTimeParams params = new CheckOutTimeParams();
         params.setTask("addWorklog");
         params.setUserId(SharedPreferencesHandler.getStringValues(this, getString(R.string.pref_user_id)));
@@ -670,18 +723,19 @@ public class GetMapLocationActivity extends AppCompatActivity
                 List<Locations> locations = response.getDataBean();
 
                 double latitude, longitude = 0.0;
-                String locationName=null;
-                int locationid=0;
+                String locationName = null;
+                int locationid = 0;
                 for (int i = 0; i < locations.size(); i++) {
                     latitude = locations.get(i).getLattitude();
                     longitude = locations.get(i).getLongitude();
-                    locationName=locations.get(i).getSite_name();
-                    locationid=locations.get(i).getSitelocation_id();
-                    latlnglist.add(new OfficeLocations(latitude, longitude, locationName,locationid ));
+                    locationName = locations.get(i).getSite_name();
+                    locationid = locations.get(i).getSitelocation_id();
+                    latlnglist.add(new OfficeLocations(latitude, longitude, locationName, locationid));
                 }
-
+                if (checkPermission()) {
                     startGeofence();
-
+                    getLastKnownLocation();
+                }
 
                 break;
             case 400:
@@ -704,9 +758,9 @@ public class GetMapLocationActivity extends AppCompatActivity
             Location locationB = new Location("LocationB");
             locationB.setLatitude(latlnglist.get(i).getLatitude());
             locationB.setLongitude(latlnglist.get(i).getLongitude());
-            float distance=locationA.distanceTo(locationB);
-            if (distance<GEOFENCE_RADIUS ) {
-                sitelocationid=latlnglist.get(i).getLocation_id();
+            float distance = locationA.distanceTo(locationB);
+            if (distance < GEOFENCE_RADIUS) {
+                sitelocationid = latlnglist.get(i).getLocation_id();
             }
         }
     }
@@ -720,14 +774,76 @@ public class GetMapLocationActivity extends AppCompatActivity
             Location locationB = new Location("LocationB");
             locationB.setLatitude(latlnglist.get(i).getLatitude());
             locationB.setLongitude(latlnglist.get(i).getLongitude());
-            float distance=locationA.distanceTo(locationB);
-            if (distance<GEOFENCE_RADIUS ) {
-               return true;
+            float distance = locationA.distanceTo(locationB);
+            if (distance < GEOFENCE_RADIUS) {
+                return true;
             }
         }
         return false;
     }
 
+
+    protected void showDialogForGPS(String message) {
+
+        if (dialog == null) {
+            dialog = new AlertDialog.Builder(this).create();
+            dialog.setTitle(getString(R.string.app_name));
+            dialog.setMessage(message);
+            dialog.setCancelable(false);
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Enable GPS", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                    paramDialogInterface.dismiss();
+                }
+            });
+        }
+
+        if (!dialog.isShowing())
+            dialog.show();
+    }
+
+    protected void dismissGpsDialog() {
+        if (dialog != null) dialog.dismiss();
+    }
+
+
+    protected boolean isGpsEnabled() {
+        boolean gpsEnabled = false;
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        try {
+            if (locationManager != null) {
+                gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return gpsEnabled;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS_GPS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        getLastKnownLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        finish();
+                        break;
+                }
+                break;
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mGpsDetectionReceiver);
+    }
 
 
 }
