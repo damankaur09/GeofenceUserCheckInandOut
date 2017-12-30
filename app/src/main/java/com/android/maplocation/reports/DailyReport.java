@@ -85,19 +85,24 @@ public class DailyReport extends Fragment {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
                 Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
-                List<ReportsBean.DataBean> data=response.body().getData();
+                ReportsBean.DataBean dataBean=response.body().getData();
+
+
                 final ArrayList<ReportData> list=new ArrayList<>();
-                String date,intime,outtime,location,shifthours,currentdate;
-                int totalhours=0;
-                for (int i=0;i<data.size()-1;i++)
+                String date,intime,outtime,location,shifthours,currentdate,startDate,endDate,totlhours;
+                startDate=dataBean.getStartDate();
+                endDate=dataBean.getStartDate();
+                totlhours=dataBean.get_$TotalHours122().toString();
+
+                List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
+                for (int i=0;i<userlog.size()-1;i++)
                 {
-                    currentdate=data.get(i).getCurrentdate();
-                   intime=data.get(i).getUserIntime();
-                    outtime=data.get(i).getUserOuttime();
-                    location=data.get(i).getSiteAddress();
-                    shifthours=data.get(i).getHours();
-                    totalhours=data.get(i).getTotaldayhours();
-                    list.add(new ReportData(currentdate,intime,location,outtime,shifthours));
+                    currentdate=userlog.get(i).getCurrentdate();
+                    intime=userlog.get(i).getUserIntime();
+                    outtime=userlog.get(i).getUserOuttime();
+                    location=userlog.get(i).getSiteAddress();
+                    shifthours=userlog.get(i).getHours();
+                    list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
 
                 }
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);

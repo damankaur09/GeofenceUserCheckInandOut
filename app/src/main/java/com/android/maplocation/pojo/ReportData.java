@@ -11,8 +11,7 @@ public class ReportData {
     private String inTime;
     private String outTime;
     private String totalhours;
-    private String startDate,endDate;
-
+    private String startDate,endDate,weeklogDay;
     public ReportData(String date, String location, String inTime, String outTime, String totalhours) {
         this.date = date;
         this.location = location;
@@ -21,7 +20,7 @@ public class ReportData {
         this.totalhours = totalhours;
     }
 
-    public ReportData(String date, String location, String inTime, String outTime, String totalhours,String startDate,String endDate) {
+    public ReportData(String date, String location, String inTime, String outTime, String totalhours,String startDate,String endDate,String weeklogDay) {
         this.date = date;
         this.location = location;
         this.inTime = inTime;
@@ -29,6 +28,7 @@ public class ReportData {
         this.totalhours = totalhours;
         this.startDate=startDate;
         this.endDate=endDate;
+        this.weeklogDay=weeklogDay;
     }
 
 
@@ -60,5 +60,7 @@ public class ReportData {
         return endDate;
     }
 
-
+    public String getWeeklogDay() {
+        return weeklogDay;
+    }
 }
