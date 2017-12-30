@@ -15,12 +15,25 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableRow.LayoutParams;
+import android.widget.Toast;
+
 import com.android.maplocation.R;
 import com.android.maplocation.adapter.RecycleAdapter;
+import com.android.maplocation.bean.ReportsBean;
 import com.android.maplocation.pojo.ReportData;
+import com.android.maplocation.serviceparams.ReportParams;
+import com.android.maplocation.utils.SharedPreferencesHandler;
+import com.android.maplocation.webservices.RetrofitClient;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Daman on 12/28/2017.
@@ -51,28 +64,52 @@ public class DailyReport extends Fragment {
 
     public void fetchReportData()
     {
-       ReportData [] userReportsData={new ReportData("2017-12-29","Chandigarh","10.00.00","12.00.00","2 hours")
+       /*ReportData [] userReportsData={new ReportData("2017-12-29","Chandigarh","10.00.00","12.00.00","2 hours")
        ,new ReportData("2017-12-29","Chandigarh","13.00.00","15.00.00","2 hours")};
 
-        ArrayList<ReportData> list=new ArrayList(Arrays.asList(userReportsData));
-
-        /*String date=null;
-        String location=null;
-        String intime,outime,hours=null;
-        for (int i=0;i<list.size();i++)
-        {
-           date=list.get(i).getDate();
-           location=list.get(i).getLocation();
-           intime=list.get(i).getInTime();
-           outime=list.get(i).getOutTime();
-           hours=list.get(i).getTotalhours();
+        ArrayList<ReportData> list=new ArrayList(Arrays.asList(userReportsData));*/
 
 
-            list.add(new DataList(name,image,userName));
-        }*/
+        ReportParams params=new ReportParams();
+        params.setTask("getWorklog");
+        params.setUserTimeZone("Asia/Kolkata");
+        params.setUserId(SharedPreferencesHandler.getStringValues(getActivity(), getString(R.string.pref_user_id)));
 
-        RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
-        recyclerView.setAdapter(adapter);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final String formatted = dateFormat.format(cal.getTime());
+        params.setCurrentDate(formatted);
+
+        Call<ReportsBean> call= RetrofitClient.getRetrofitClient().reports(params);
+        call.enqueue(new Callback<ReportsBean>() {
+            @Override
+            public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
+                Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+                List<ReportsBean.DataBean> data=response.body().getData();
+                final ArrayList<ReportData> list=new ArrayList<>();
+                String date,intime,outtime,location,shifthours,currentdate;
+                int totalhours=0;
+                for (int i=0;i<data.size()-1;i++)
+                {
+                    currentdate=data.get(i).getCurrentdate();
+                   intime=data.get(i).getUserIntime();
+                    outtime=data.get(i).getUserOuttime();
+                    location=data.get(i).getSiteAddress();
+                    shifthours=data.get(i).getHours();
+                    totalhours=data.get(i).getTotaldayhours();
+                    list.add(new ReportData(currentdate,intime,location,outtime,shifthours));
+
+                }
+                RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<ReportsBean> call, Throwable t) {
+
+            }
+        });
+
     }
 
 }
