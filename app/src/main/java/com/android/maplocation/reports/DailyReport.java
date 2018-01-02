@@ -27,10 +27,12 @@ import com.android.maplocation.serviceparams.ReportParams;
 import com.android.maplocation.utils.SharedPreferencesHandler;
 import com.android.maplocation.webservices.RetrofitClient;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -64,7 +66,7 @@ public class DailyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-
+        totalworkhours=getActivity().findViewById(R.id.textView5);
         fetchReportData();
     }
 
@@ -94,7 +96,11 @@ public class DailyReport extends Fragment {
                 ReportsBean.DataBean dataBean=response.body().getData();
 
                 if (response.isSuccessful()) {
-                    onSuccess(response.body());
+                    try {
+                        onSuccess(response.body());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     onError(response.errorBody().toString());
                 }
@@ -110,7 +116,7 @@ public class DailyReport extends Fragment {
 
     }
 
-    private void onSuccess(ReportsBean response) {
+    private void onSuccess(ReportsBean response) throws ParseException {
         switch (response.getStatus()) {
             case 200:
                 ReportsBean.DataBean dataBean=response.getData();
@@ -118,16 +124,19 @@ public class DailyReport extends Fragment {
                 String intime,outtime,location,shifthours,currentdate;
 
 
-                String date1="00:00:00";
-
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
                 for (int i=0;i<userlog.size();i++)
                 {
+
+
+
                     currentdate=userlog.get(i).getCurrentdate();
                     intime=userlog.get(i).getUserIntime();
                     outtime=userlog.get(i).getUserOuttime();
                     location=userlog.get(i).getSiteAddress();
                     shifthours=userlog.get(i).getHours();
+
+
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
 
                 }

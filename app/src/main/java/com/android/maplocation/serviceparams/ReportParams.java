@@ -10,12 +10,16 @@ import com.google.gson.annotations.SerializedName;
 public class ReportParams
 {
 
+
     /**
      * task : getWorklog
-     * user_id : 10
+     * user_id : 2
      * userTimeZone : Asia/Kolkata
-     * currentDate : 2017-12-30
+     * currentDate :
      * weekly_log :
+     * monthly_log : 1
+     * month : 12
+     * year : 2017
      */
 
     @SerializedName("task")
@@ -28,6 +32,12 @@ public class ReportParams
     private String currentDate;
     @SerializedName("weekly_log")
     private String weeklyLog;
+    @SerializedName("monthly_log")
+    private String monthlyLog;
+    @SerializedName("month")
+    private String month;
+    @SerializedName("year")
+    private String year;
 
     public static ReportParams objectFromData(String str) {
 
@@ -72,5 +82,29 @@ public class ReportParams
 
     public void setWeeklyLog(String weeklyLog) {
         this.weeklyLog = weeklyLog;
+    }
+
+    public String getMonthlyLog() {
+        return monthlyLog;
+    }
+
+    public void setMonthlyLog(String monthlyLog) {
+        this.monthlyLog = monthlyLog;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

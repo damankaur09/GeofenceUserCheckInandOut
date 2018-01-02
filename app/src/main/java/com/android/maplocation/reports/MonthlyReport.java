@@ -123,8 +123,7 @@ public class MonthlyReport extends Fragment {
         public void onDateSet(DatePicker arg0, int year, int monthOfYear, int dayOfMonth) {
             selectyear=String.valueOf(year);
             month=String.valueOf(monthOfYear+1);
-//            tfDescription.setText(selectyear);
-//            tfDate.setText(month);
+
         }
     };
 
@@ -143,7 +142,8 @@ public class MonthlyReport extends Fragment {
         params.setTask("getWorklog");
         params.setUserTimeZone("Asia/Kolkata");
         params.setUserId(SharedPreferencesHandler.getStringValues(getActivity(), getString(R.string.pref_user_id)));
-
+        params.setMonth(month);
+        params.setYear(selectyear);
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final String formatted = dateFormat.format(cal.getTime());
@@ -180,7 +180,7 @@ public class MonthlyReport extends Fragment {
                 final ArrayList<ReportData> list=new ArrayList<>();
                 String intime,outtime,location,shifthours,currentdate;
 
-                String date1="00:00:00";
+
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
                 for (int i=0;i<userlog.size();i++)
                 {
