@@ -140,7 +140,7 @@ public class ReportsBean {
             private String username;
             @SerializedName("hours")
             private String hours;
-            @SerializedName("currentdate")
+            @SerializedName("user_indate")
             private String currentdate;
 
             public static UserlogBean objectFromData(String str) {
