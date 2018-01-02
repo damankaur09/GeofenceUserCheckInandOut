@@ -9,12 +9,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.maplocation.R;
 import com.android.maplocation.adapter.RecycleAdapter;
+import com.android.maplocation.bean.Locations;
+import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.ReportsBean;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.pojo.ReportData;
 import com.android.maplocation.serviceparams.ReportParams;
 import com.android.maplocation.utils.SharedPreferencesHandler;
@@ -29,6 +33,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.android.maplocation.R.drawable.notify_small;
 
 /**
  * Created by Daman on 12/28/2017.
@@ -54,7 +60,6 @@ public class WeeklyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-
         fetchReportData();
     }
 
@@ -76,7 +81,7 @@ public class WeeklyReport extends Fragment {
         call.enqueue(new Callback<ReportsBean>() {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
-                // Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+
 
                 if (response.isSuccessful()) {
                     onSuccess(response.body());
@@ -113,7 +118,7 @@ public class WeeklyReport extends Fragment {
                     shifthours=userlog.get(i).getHours();
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
                 }
-
+            
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
                 break;

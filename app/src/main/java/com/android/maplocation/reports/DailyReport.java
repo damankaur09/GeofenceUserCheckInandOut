@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -44,6 +46,9 @@ public class DailyReport extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
+    private ImageView imageView;
+    private TextView textView,totalworkhours;
+    private Button btSelectDate;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,6 +64,7 @@ public class DailyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+
         fetchReportData();
     }
 
@@ -111,7 +117,9 @@ public class DailyReport extends Fragment {
                 final ArrayList<ReportData> list=new ArrayList<>();
                 String intime,outtime,location,shifthours,currentdate;
 
+
                 String date1="00:00:00";
+
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
                 for (int i=0;i<userlog.size();i++)
                 {
@@ -130,11 +138,14 @@ public class DailyReport extends Fragment {
                 Toast.makeText(getActivity(), response.getStatusMessage(), Toast.LENGTH_SHORT).show();
                 break;
         }
+
     }
 
     private void onError(String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
     }
+
+
 }
 
 

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+
+import android.widget.ImageView;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.maplocation.R;
 import com.android.maplocation.adapter.RecycleAdapter;
 import com.android.maplocation.bean.ReportsBean;
+
+import com.android.maplocation.datepicker.DatePickerFragment;
+
 import com.android.maplocation.pojo.ReportData;
 import com.android.maplocation.serviceparams.ReportParams;
 import com.android.maplocation.utils.SharedPreferencesHandler;
@@ -26,6 +33,9 @@ import com.android.maplocation.webservices.RetrofitClient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import java.util.Arrays;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -41,25 +51,31 @@ public class MonthlyReport extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
+
     Button button;
     TextView tfDescription,tfDate;
     private String month,selectyear;
+
+    private Button btSelectDate;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         View rootView=inflater.inflate(R.layout.reportlist, container, false);
+
 
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         super.onViewCreated(view, savedInstanceState);
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+
 
         button =view.findViewById(R.id.selectdate);
 
@@ -187,5 +203,10 @@ public class MonthlyReport extends Fragment {
 
     private void onError(String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+
+
     }
+
+
+
 }
