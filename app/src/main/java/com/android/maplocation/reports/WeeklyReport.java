@@ -54,12 +54,7 @@ public class WeeklyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        tv_startDate=view.findViewById(R.id.tv_startDate);
-        tv_endDate=view.findViewById(R.id.tv_endDate);
-        tv_startDate.setVisibility(View.VISIBLE);
-        tv_endDate.setVisibility(View.VISIBLE);
-        tv_startDate.setText("Start Date: 2017-12-25");
-        tv_endDate.setText("End Date: 2017-12-29");
+
         fetchReportData();
     }
 

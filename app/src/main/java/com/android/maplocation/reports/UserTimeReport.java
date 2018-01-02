@@ -15,7 +15,6 @@ public class UserTimeReport extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_time_report);
 
-        setContentView(R.layout.activity_user_time_report);
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
 
