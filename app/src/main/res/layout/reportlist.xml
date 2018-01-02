@@ -18,14 +18,13 @@
         android:text="Total Working hours :4 hours" />
 
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:layout_alignEnd="@+id/textView5"
-        android:layout_below="@+id/selectdate" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView5" />
 
 
     <Button
@@ -34,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:visibility="gone"
         android:text="Select Date" />
 
 

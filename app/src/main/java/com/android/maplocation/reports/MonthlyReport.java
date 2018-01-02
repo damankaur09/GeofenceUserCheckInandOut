@@ -78,7 +78,7 @@ public class MonthlyReport extends Fragment {
 
 
         button =view.findViewById(R.id.selectdate);
-
+        button.setVisibility(View.VISIBLE);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
