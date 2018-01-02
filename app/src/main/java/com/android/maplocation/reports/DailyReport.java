@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -44,6 +46,9 @@ public class DailyReport extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
+    private ImageView imageView;
+    private TextView textView,totalworkhours;
+    private Button btSelectDate;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,6 +64,8 @@ public class DailyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+        totalworkhours=getActivity().findViewById(R.id.tv_totalhours);
+
         fetchReportData();
     }
 
@@ -87,15 +94,33 @@ public class DailyReport extends Fragment {
                 Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
                 ReportsBean.DataBean dataBean=response.body().getData();
 
+                if (response.isSuccessful()) {
+                    onSuccess(response.body());
+                } else {
+                    onError(response.errorBody().toString());
+                }
 
+
+            }
+
+            @Override
+            public void onFailure(Call<ReportsBean> call, Throwable t) {
+                onError(t.getMessage());
+            }
+        });
+
+    }
+
+    private void onSuccess(ReportsBean response) {
+        switch (response.getStatus()) {
+            case 200:
+                ReportsBean.DataBean dataBean=response.getData();
                 final ArrayList<ReportData> list=new ArrayList<>();
-                String date,intime,outtime,location,shifthours,currentdate,startDate,endDate,totlhours;
-                startDate=dataBean.getStartDate();
-                endDate=dataBean.getStartDate();
-                totlhours=dataBean.get_$TotalHours122().toString();
+                String intime,outtime,location,shifthours,currentdate;
 
+               String date1="00:00:00";
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
-                for (int i=0;i<userlog.size()-1;i++)
+                for (int i=0;i<userlog.size();i++)
                 {
                     currentdate=userlog.get(i).getCurrentdate();
                     intime=userlog.get(i).getUserIntime();
@@ -105,17 +130,19 @@ public class DailyReport extends Fragment {
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
 
                 }
+
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(Call<ReportsBean> call, Throwable t) {
-
-            }
-        });
-
+            case 400:
+                Toast.makeText(getActivity(), response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
+
+    private void onError(String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
 
 }
 

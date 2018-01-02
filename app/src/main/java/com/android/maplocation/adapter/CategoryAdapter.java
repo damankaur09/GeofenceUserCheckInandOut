@@ -3,6 +3,7 @@ package com.android.maplocation.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.widget.TextView;
 
 import com.android.maplocation.reports.DailyReport;
 import com.android.maplocation.reports.MonthlyReport;

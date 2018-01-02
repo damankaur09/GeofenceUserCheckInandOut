@@ -9,12 +9,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.maplocation.R;
 import com.android.maplocation.adapter.RecycleAdapter;
+import com.android.maplocation.bean.Locations;
+import com.android.maplocation.bean.OfficeLocationBean;
 import com.android.maplocation.bean.ReportsBean;
+import com.android.maplocation.pojo.OfficeLocations;
 import com.android.maplocation.pojo.ReportData;
 import com.android.maplocation.serviceparams.ReportParams;
 import com.android.maplocation.utils.SharedPreferencesHandler;
@@ -29,6 +33,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.android.maplocation.R.drawable.notify_small;
 
 /**
  * Created by Daman on 12/28/2017.
@@ -54,12 +60,6 @@ public class WeeklyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        tv_startDate=view.findViewById(R.id.tv_startDate);
-        tv_endDate=view.findViewById(R.id.tv_endDate);
-        tv_startDate.setVisibility(View.VISIBLE);
-        tv_endDate.setVisibility(View.VISIBLE);
-        tv_startDate.setText("Start Date: 2017-12-25");
-        tv_endDate.setText("End Date: 2017-12-29");
         fetchReportData();
     }
 
@@ -81,10 +81,27 @@ public class WeeklyReport extends Fragment {
         call.enqueue(new Callback<ReportsBean>() {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
-                Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
-                ReportsBean.DataBean dataBean=response.body().getData();
+               // Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
 
+                if (response.isSuccessful()) {
+                    onSuccess(response.body());
+                } else {
+                    onError(response.errorBody().toString());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<ReportsBean> call, Throwable t) {
+                onError(t.getMessage());
+            }
+        });
+
+    }
+
+    private void onSuccess(ReportsBean response) {
+        switch (response.getStatus()) {
+            case 200:
+                ReportsBean.DataBean dataBean=response.getData();
                 final ArrayList<ReportData> list=new ArrayList<>();
                 String date,intime,outtime,location,shifthours,currentdate,startDate,endDate,totlhours;
                 startDate=dataBean.getStartDate();
@@ -92,7 +109,7 @@ public class WeeklyReport extends Fragment {
                 totlhours=dataBean.get_$TotalHours122().toString();
 
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
-                for (int i=0;i<userlog.size()-1;i++)
+                for (int i=0;i<userlog.size();i++)
                 {
                     currentdate=userlog.get(i).getCurrentdate();
                     intime=userlog.get(i).getUserIntime();
@@ -101,17 +118,17 @@ public class WeeklyReport extends Fragment {
                     shifthours=userlog.get(i).getHours();
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
                 }
-
+            
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
-            }
+                break;
+            case 400:
+                Toast.makeText(getActivity(), response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
 
-            @Override
-            public void onFailure(Call<ReportsBean> call, Throwable t) {
-
-            }
-        });
-
-
+    private void onError(String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
     }
 }
