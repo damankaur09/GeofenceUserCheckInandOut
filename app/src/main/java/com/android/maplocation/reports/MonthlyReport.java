@@ -258,7 +258,7 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
                     month = String.valueOf(spinnerMonth.getSelectedItem());
 
                     if (selectyear.trim().isEmpty())
-                        Snackbar.make(spinnerMonth, "Please select year first", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(spinnerMonth, "Please select year", Snackbar.LENGTH_SHORT).show();
                     else
                         fetchReportData();
                 } else {
@@ -268,9 +268,13 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
 
             case R.id.spinner_year:
                 if (i != 0) {
-                    System.out.println("Yearly : " + spinnerYear.getSelectedItem());
-                    selectyear = String.valueOf(spinnerYear.getSelectedItem());
-                    fetchReportData();
+                    if (month.trim().isEmpty())
+                        Snackbar.make(spinnerYear, "Please select month", Snackbar.LENGTH_SHORT).show();
+                    else {
+                        System.out.println("Yearly : " + spinnerYear.getSelectedItem());
+                        selectyear = String.valueOf(spinnerYear.getSelectedItem());
+                        fetchReportData();
+                    }
                 } else {
                     selectyear = "";
                 }

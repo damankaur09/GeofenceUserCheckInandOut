@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -719,13 +720,17 @@ public class GetMapLocationActivity extends AppCompatActivity
                     latlnglist.add(new OfficeLocations(latitude, longitude, locationName, locationid));
                 }
                 if (checkPermission()) {
-                    startGeofence();
-                    getLastKnownLocation();
+
+                        startGeofence();
+                        getLastKnownLocation();
+
+
+
                 }
 
                 break;
             case 400:
-                Toast.makeText(this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No Data", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -833,4 +838,31 @@ public class GetMapLocationActivity extends AppCompatActivity
     }
 
 
+    //check network state
+    public final boolean isInternetOn() {
+
+        // get Connectivity Manager object to check connection
+        ConnectivityManager connec =
+                (ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
+
+        // Check for network connections
+        if ( connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTED ||
+                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTING ||
+                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
+                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED ) {
+
+            // if connected with internet
+
+            Toast.makeText(this, " Connected ", Toast.LENGTH_LONG).show();
+            return true;
+
+        } else if (
+                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED ||
+                        connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED  ) {
+
+            Toast.makeText(this, " Not Connected ", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return false;
+    }
 }
