@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -173,6 +174,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         createGoogleApi();
 
         mGeofencingClient = LocationServices.getGeofencingClient(this);
+
 
         fetchLocationData();
 
@@ -636,7 +638,7 @@ public class GetMapLocationActivity extends AppCompatActivity
             public void onResponse(Call<CheckInTimeBean> call, Response<CheckInTimeBean> response) {
 
                 workId = response.body().getData().getUser_work_log_id();
-                Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
+              //  Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -667,7 +669,7 @@ public class GetMapLocationActivity extends AppCompatActivity
         call.enqueue(new Callback<CheckOutTimeBean>() {
             @Override
             public void onResponse(Call<CheckOutTimeBean> call, Response<CheckOutTimeBean> response) {
-                Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
+               // Toast.makeText(GetMapLocationActivity.this, response.body().getStatusMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -719,7 +721,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                     locationid = locations.get(i).getSitelocation_id();
                     latlnglist.add(new OfficeLocations(latitude, longitude, locationName, locationid));
                 }
-                if (checkPermission()) {
+                if (checkPermission() ) {
 
                         startGeofence();
                         getLastKnownLocation();
@@ -730,13 +732,13 @@ public class GetMapLocationActivity extends AppCompatActivity
 
                 break;
             case 400:
-                Toast.makeText(this, "No Data", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "No Data", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
     private void onError(String errorMessage) {
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -839,29 +841,21 @@ public class GetMapLocationActivity extends AppCompatActivity
 
 
     //check network state
-    public final boolean isInternetOn() {
-
-        // get Connectivity Manager object to check connection
-        ConnectivityManager connec =
-                (ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
-
-        // Check for network connections
-        if ( connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTED ||
-                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED ) {
-
-            // if connected with internet
-
-            Toast.makeText(this, " Connected ", Toast.LENGTH_LONG).show();
+    protected boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
-
-        } else if (
-                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED ||
-                        connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED  ) {
-
-            Toast.makeText(this, " Not Connected ", Toast.LENGTH_LONG).show();
+        } else {
             return false;
+        }
+    }
+
+    public boolean checkConnection(){
+        if(isOnline()){
+            Toast.makeText(GetMapLocationActivity.this, "You are connected to Internet", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(GetMapLocationActivity.this, "You are not connected to Internet", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
