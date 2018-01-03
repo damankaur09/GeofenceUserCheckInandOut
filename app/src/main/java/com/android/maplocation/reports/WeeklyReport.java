@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ import static com.android.maplocation.R.drawable.notify_small;
 
 public class WeeklyReport extends Fragment {
 
+    private ProgressBar spinner;
     private RecyclerView recyclerView;
     private TextView totalhours;
     private LinearLayoutManager linearLayoutManager;
@@ -61,6 +63,7 @@ public class WeeklyReport extends Fragment {
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         totalhours=view.findViewById(R.id.textView5);
+        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
         fetchReportData();
     }
 
@@ -79,20 +82,28 @@ public class WeeklyReport extends Fragment {
         params.setCurrentDate(formatted);
 
         Call<ReportsBean> call= RetrofitClient.getRetrofitClient().reports(params);
+        spinner.setVisibility(View.VISIBLE);
         call.enqueue(new Callback<ReportsBean>() {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
 
 
                 if (response.isSuccessful()) {
-                    onSuccess(response.body());
+                    spinner.setVisibility(View.GONE);
+                    try {
+                        onSuccess(response.body());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
+                    spinner.setVisibility(View.GONE);
                     onError(response.errorBody().toString());
                 }
             }
 
             @Override
             public void onFailure(Call<ReportsBean> call, Throwable t) {
+                spinner.setVisibility(View.GONE);
                 onError(t.getMessage());
             }
         });

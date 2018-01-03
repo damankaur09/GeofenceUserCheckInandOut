@@ -1,5 +1,6 @@
 package com.android.maplocation.reports;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -45,7 +48,7 @@ import retrofit2.Response;
 
 public class DailyReport extends Fragment {
 
-
+    private ProgressBar spinner;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private ImageView imageView;
@@ -67,6 +70,7 @@ public class DailyReport extends Fragment {
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         totalworkhours=view.findViewById(R.id.textView5);
+        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
         fetchReportData();
     }
 
@@ -89,19 +93,22 @@ public class DailyReport extends Fragment {
         params.setCurrentDate(formatted);
 
         Call<ReportsBean> call= RetrofitClient.getRetrofitClient().reports(params);
+
+        spinner.setVisibility(View.VISIBLE);
         call.enqueue(new Callback<ReportsBean>() {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
-                Toast.makeText(getActivity(), response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
                 ReportsBean.DataBean dataBean=response.body().getData();
 
                 if (response.isSuccessful()) {
+                    spinner.setVisibility(View.GONE);
                     try {
                         onSuccess(response.body());
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
                 } else {
+                    spinner.setVisibility(View.GONE);
                     onError(response.errorBody().toString());
                 }
 
@@ -109,7 +116,9 @@ public class DailyReport extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ReportsBean> call, Throwable t) {
+            public void onFailure(Call<ReportsBean> call, Throwable t)
+            {
+                spinner.setVisibility(View.GONE);
                 onError(t.getMessage());
             }
         });

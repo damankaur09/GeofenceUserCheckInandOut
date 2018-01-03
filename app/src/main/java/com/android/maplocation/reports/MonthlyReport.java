@@ -22,6 +22,7 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ import retrofit2.Response;
 
 public class MonthlyReport extends Fragment implements AdapterView.OnItemSelectedListener {
 
+    private ProgressBar spinner;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private LinearLayout linearLayout;
@@ -86,10 +88,9 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
         recyclerView = view.findViewById(R.id.recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-
         adapter = new RecycleAdapter(getActivity(), list);
         recyclerView.setAdapter(adapter);
-
+        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
         totalhours = view.findViewById(R.id.textView5);
         spinnerMonth = view.findViewById(R.id.spinner_month);
         spinnerYear = view.findViewById(R.id.spinner_year);
@@ -174,13 +175,20 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
         params.setMonthlyLog("1");
 
         Call<ReportsBean> call = RetrofitClient.getRetrofitClient().reports(params);
+        spinner.setVisibility(View.VISIBLE);
         call.enqueue(new Callback<ReportsBean>() {
             @Override
             public void onResponse(Call<ReportsBean> call, Response<ReportsBean> response) {
 
                 if (response.isSuccessful()) {
-                    onSuccess(response.body());
+                    spinner.setVisibility(View.GONE);
+                    try {
+                        onSuccess(response.body());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
+                    spinner.setVisibility(View.GONE);
                     onError(response.errorBody().toString());
                 }
 
@@ -189,6 +197,8 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
 
             @Override
             public void onFailure(Call<ReportsBean> call, Throwable t) {
+
+                spinner.setVisibility(View.GONE);
                 onError(t.getMessage());
             }
         });
