@@ -224,6 +224,7 @@ public class MonthlyReport extends Fragment implements AdapterView.OnItemSelecte
             case 400:
                 if (!list.isEmpty())
                     list.clear();
+                totalhours.setText("");
                 if (adapter != null)
                     adapter.notifyDataSetChanged();
                 Snackbar.make(recyclerView, response.getStatusMessage(), Snackbar.LENGTH_SHORT).show();
