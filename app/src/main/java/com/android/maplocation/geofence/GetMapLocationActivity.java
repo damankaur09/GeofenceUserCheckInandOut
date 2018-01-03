@@ -323,7 +323,7 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     // Start location Updates
     private void startLocationUpdates() {
-        if (checkPermission()) {
+        if (checkPermission()&&googleApiClient!=null&&googleApiClient.isConnected()) {
 
             Log.i(TAG, "startLocationUpdates()");
             locationRequest = LocationRequest.create()

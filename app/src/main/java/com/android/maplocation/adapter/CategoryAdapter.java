@@ -14,25 +14,26 @@ import com.android.maplocation.reports.WeeklyReport;
  */
 public class CategoryAdapter extends FragmentPagerAdapter {
 
-    private String [] tabTitles={"Daily","Weekly","Monthly"};
+    private String[] tabTitles = {"Daily", "Weekly", "Monthly"};
+
     public CategoryAdapter(FragmentManager fm) {
         super(fm);
     }
 
     @Override
     public Fragment getItem(int position) {
-        if(position==0)
-        {
+        if (position == 0) {
 
             return new DailyReport();
-        }
-        if(position==1)
-        {
+
+        } else if (position == 1) {
+
             return new WeeklyReport();
-        }
-        if(position==2)
-        {
+
+        } else if (position == 2) {
+
             return new MonthlyReport();
+
         }
 
         return null;

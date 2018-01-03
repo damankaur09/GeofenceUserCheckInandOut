@@ -15,7 +15,7 @@ public class ReportsBean {
     /**
      * status : 200
      * status_message : Record Found
-     * data : {"StartDate":"2017-12-30","EndDate":"2017-12-30","Total hours":"hii","userlog":[{"user_work_log_id":"11","user_id":"10","user_intime":"12:47:19","user_outtime":"12:47:58","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:42","currentdate":"2017-12-30"},{"user_work_log_id":"12","user_id":"10","user_intime":"12:58:17","user_outtime":"12:58:30","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"15:28:44","currentdate":"2017-12-30"},{"user_work_log_id":"13","user_id":"10","user_intime":"13:07:08","user_outtime":"13:07:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"-00:00:05","currentdate":"2017-12-30"},{"user_work_log_id":"14","user_id":"10","user_intime":"13:19:36","user_outtime":"13:19:43","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:18","currentdate":"2017-12-30"},{"user_work_log_id":"15","user_id":"10","user_intime":"13:27:39","user_outtime":"13:27:45","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","currentdate":"2017-12-30"},{"user_work_log_id":"16","user_id":"10","user_intime":"13:29:01","user_outtime":"13:29:12","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","currentdate":"2017-12-30"},{"user_work_log_id":"17","user_id":"10","user_intime":"13:34:02","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"},{"user_work_log_id":"18","user_id":"10","user_intime":"13:35:20","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"},{"user_work_log_id":"19","user_id":"10","user_intime":"13:52:42","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"}]}
+     * data : {"StartDate":"","EndDate":"","Total hours":"hii","userlog":[{"user_work_log_id":"1","user_id":"10","user_intime":"18:31:06","user_outtime":"18:51:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-28","user_outdate":"2017-12-28"},{"user_work_log_id":"2","user_id":"10","user_intime":"18:32:07","user_outtime":"18:32:14","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-28","user_outdate":"2017-12-28"},{"user_work_log_id":"3","user_id":"10","user_intime":"17:15:38","user_outtime":"06:15:38","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"4","user_id":"10","user_intime":"18:33:01","user_outtime":"18:36:21","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"5","user_id":"10","user_intime":"18:48:20","user_outtime":"18:48:28","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"6","user_id":"10","user_intime":"18:49:29","user_outtime":"18:49:31","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"7","user_id":"10","user_intime":"18:49:42","user_outtime":"18:51:15","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"8","user_id":"10","user_intime":"18:52:14","user_outtime":"18:52:17","site_location_id":"2","site_address":"Advocate Society,Sector 49","site_name":"Vishakha Home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"9","user_id":"10","user_intime":"20:04:26","user_outtime":"20:05:41","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"10","user_id":"10","user_intime":"20:25:40","user_outtime":"20:25:48","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"11","user_id":"10","user_intime":"12:47:19","user_outtime":"12:47:58","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:42","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"12","user_id":"10","user_intime":"12:58:17","user_outtime":"12:58:30","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"15:28:44","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"13","user_id":"10","user_intime":"13:07:08","user_outtime":"13:07:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"-00:00:05","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"14","user_id":"10","user_intime":"13:19:36","user_outtime":"13:19:43","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:18","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"15","user_id":"10","user_intime":"13:27:39","user_outtime":"13:27:45","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"16","user_id":"10","user_intime":"13:29:01","user_outtime":"13:29:12","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"20","user_id":"10","user_intime":"19:44:38","user_outtime":"19:44:52","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-30","user_outdate":"2017-12-30"}],"totaldayhours":"67:56"}
      */
 
     @SerializedName("status")
@@ -56,10 +56,11 @@ public class ReportsBean {
 
     public static class DataBean {
         /**
-         * StartDate : 2017-12-30
-         * EndDate : 2017-12-30
+         * StartDate :
+         * EndDate :
          * Total hours : hii
-         * userlog : [{"user_work_log_id":"11","user_id":"10","user_intime":"12:47:19","user_outtime":"12:47:58","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:42","currentdate":"2017-12-30"},{"user_work_log_id":"12","user_id":"10","user_intime":"12:58:17","user_outtime":"12:58:30","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"15:28:44","currentdate":"2017-12-30"},{"user_work_log_id":"13","user_id":"10","user_intime":"13:07:08","user_outtime":"13:07:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"-00:00:05","currentdate":"2017-12-30"},{"user_work_log_id":"14","user_id":"10","user_intime":"13:19:36","user_outtime":"13:19:43","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:18","currentdate":"2017-12-30"},{"user_work_log_id":"15","user_id":"10","user_intime":"13:27:39","user_outtime":"13:27:45","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","currentdate":"2017-12-30"},{"user_work_log_id":"16","user_id":"10","user_intime":"13:29:01","user_outtime":"13:29:12","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","currentdate":"2017-12-30"},{"user_work_log_id":"17","user_id":"10","user_intime":"13:34:02","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"},{"user_work_log_id":"18","user_id":"10","user_intime":"13:35:20","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"},{"user_work_log_id":"19","user_id":"10","user_intime":"13:52:42","user_outtime":"00:00:00","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","currentdate":"2017-12-30"}]
+         * userlog : [{"user_work_log_id":"1","user_id":"10","user_intime":"18:31:06","user_outtime":"18:51:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-28","user_outdate":"2017-12-28"},{"user_work_log_id":"2","user_id":"10","user_intime":"18:32:07","user_outtime":"18:32:14","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-28","user_outdate":"2017-12-28"},{"user_work_log_id":"3","user_id":"10","user_intime":"17:15:38","user_outtime":"06:15:38","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"4","user_id":"10","user_intime":"18:33:01","user_outtime":"18:36:21","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"5","user_id":"10","user_intime":"18:48:20","user_outtime":"18:48:28","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"6","user_id":"10","user_intime":"18:49:29","user_outtime":"18:49:31","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"7","user_id":"10","user_intime":"18:49:42","user_outtime":"18:51:15","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"8","user_id":"10","user_intime":"18:52:14","user_outtime":"18:52:17","site_location_id":"2","site_address":"Advocate Society,Sector 49","site_name":"Vishakha Home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"9","user_id":"10","user_intime":"20:04:26","user_outtime":"20:05:41","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"10","user_id":"10","user_intime":"20:25:40","user_outtime":"20:25:48","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"00:00:00","user_indate":"2017-12-29","user_outdate":"2017-12-29"},{"user_work_log_id":"11","user_id":"10","user_intime":"12:47:19","user_outtime":"12:47:58","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:42","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"12","user_id":"10","user_intime":"12:58:17","user_outtime":"12:58:30","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"15:28:44","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"13","user_id":"10","user_intime":"13:07:08","user_outtime":"13:07:17","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"-00:00:05","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"14","user_id":"10","user_intime":"13:19:36","user_outtime":"13:19:43","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"00:00:18","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"15","user_id":"10","user_intime":"13:27:39","user_outtime":"13:27:45","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"16","user_id":"10","user_intime":"13:29:01","user_outtime":"13:29:12","site_location_id":"1","site_address":"Bestech Business Tower","site_name":"My office","username":"damanpreet kaur","hours":"23:59:55","user_indate":"2017-12-30","user_outdate":"2017-12-30"},{"user_work_log_id":"20","user_id":"10","user_intime":"19:44:38","user_outtime":"19:44:52","site_location_id":"3","site_address":"Plam meadows kharar, bhagoo majra road","site_name":"Daman home","username":"damanpreet kaur","hours":"01:30:00","user_indate":"2017-12-30","user_outdate":"2017-12-30"}]
+         * totaldayhours : 67:56
          */
 
         @SerializedName("StartDate")
@@ -67,7 +68,9 @@ public class ReportsBean {
         @SerializedName("EndDate")
         private String EndDate;
         @SerializedName("Total hours")
-        private String _$TotalHours122; // FIXME check this code
+        private String _$TotalHours259; // FIXME check this code
+        @SerializedName("totaldayhours")
+        private String totaldayhours;
         @SerializedName("userlog")
         private List<UserlogBean> userlog;
 
@@ -92,12 +95,20 @@ public class ReportsBean {
             this.EndDate = EndDate;
         }
 
-        public String get_$TotalHours122() {
-            return _$TotalHours122;
+        public String get_$TotalHours259() {
+            return _$TotalHours259;
         }
 
-        public void set_$TotalHours122(String _$TotalHours122) {
-            this._$TotalHours122 = _$TotalHours122;
+        public void set_$TotalHours259(String _$TotalHours259) {
+            this._$TotalHours259 = _$TotalHours259;
+        }
+
+        public String getTotaldayhours() {
+            return totaldayhours;
+        }
+
+        public void setTotaldayhours(String totaldayhours) {
+            this.totaldayhours = totaldayhours;
         }
 
         public List<UserlogBean> getUserlog() {
@@ -110,16 +121,17 @@ public class ReportsBean {
 
         public static class UserlogBean {
             /**
-             * user_work_log_id : 11
+             * user_work_log_id : 1
              * user_id : 10
-             * user_intime : 12:47:19
-             * user_outtime : 12:47:58
+             * user_intime : 18:31:06
+             * user_outtime : 18:51:17
              * site_location_id : 1
              * site_address : Bestech Business Tower
              * site_name : My office
              * username : damanpreet kaur
-             * hours : 00:00:42
-             * currentdate : 2017-12-30
+             * hours : 01:30:00
+             * user_indate : 2017-12-28
+             * user_outdate : 2017-12-28
              */
 
             @SerializedName("user_work_log_id")
@@ -141,7 +153,9 @@ public class ReportsBean {
             @SerializedName("hours")
             private String hours;
             @SerializedName("user_indate")
-            private String currentdate;
+            private String userIndate;
+            @SerializedName("user_outdate")
+            private String userOutdate;
 
             public static UserlogBean objectFromData(String str) {
 
@@ -220,12 +234,20 @@ public class ReportsBean {
                 this.hours = hours;
             }
 
-            public String getCurrentdate() {
-                return currentdate;
+            public String getUserIndate() {
+                return userIndate;
             }
 
-            public void setCurrentdate(String currentdate) {
-                this.currentdate = currentdate;
+            public void setUserIndate(String userIndate) {
+                this.userIndate = userIndate;
+            }
+
+            public String getUserOutdate() {
+                return userOutdate;
+            }
+
+            public void setUserOutdate(String userOutdate) {
+                this.userOutdate = userOutdate;
             }
         }
     }

@@ -66,7 +66,7 @@ public class DailyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        totalworkhours=getActivity().findViewById(R.id.textView5);
+        totalworkhours=view.findViewById(R.id.textView5);
         fetchReportData();
     }
 
@@ -127,10 +127,7 @@ public class DailyReport extends Fragment {
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
                 for (int i=0;i<userlog.size();i++)
                 {
-
-
-
-                    currentdate=userlog.get(i).getCurrentdate();
+                    currentdate=userlog.get(i).getUserIntime();
                     intime=userlog.get(i).getUserIntime();
                     outtime=userlog.get(i).getUserOuttime();
                     location=userlog.get(i).getSiteAddress();
@@ -140,7 +137,7 @@ public class DailyReport extends Fragment {
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
 
                 }
-
+                totalworkhours.setText("Total hrs:"+dataBean.getTotaldayhours());
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
             case 400:

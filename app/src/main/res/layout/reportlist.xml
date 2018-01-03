@@ -11,11 +11,9 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_alignBaseline="@+id/selectdate"
-        android:layout_alignBottom="@+id/selectdate"
         android:layout_alignParentEnd="true"
-        android:text="Total Working hours :4 hours" />
+        android:minWidth="@dimen/dp80"
+        android:text="" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -28,14 +26,26 @@
         android:layout_marginTop="17dp" />
 
 
-    <Button
-        android:id="@+id/selectdate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/yearmonth"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/textView5"
         android:visibility="gone"
-        android:text="Select Date" />
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner_month"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 
 </RelativeLayout>

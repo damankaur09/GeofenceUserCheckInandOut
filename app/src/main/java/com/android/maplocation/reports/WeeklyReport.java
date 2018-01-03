@@ -43,7 +43,7 @@ import static com.android.maplocation.R.drawable.notify_small;
 public class WeeklyReport extends Fragment {
 
     private RecyclerView recyclerView;
-    private TextView tv_startDate,tv_endDate;
+    private TextView totalhours;
     private LinearLayoutManager linearLayoutManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +60,7 @@ public class WeeklyReport extends Fragment {
         recyclerView=view.findViewById(R.id.recycler_view);
         linearLayoutManager=new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+        totalhours=view.findViewById(R.id.textView5);
         fetchReportData();
     }
 
@@ -104,21 +105,18 @@ public class WeeklyReport extends Fragment {
                 ReportsBean.DataBean dataBean=response.getData();
                 final ArrayList<ReportData> list=new ArrayList<>();
                 String date,intime,outtime,location,shifthours,currentdate,startDate,endDate,totlhours;
-                startDate=dataBean.getStartDate();
-                endDate=dataBean.getStartDate();
-                totlhours=dataBean.get_$TotalHours122().toString();
 
                 List<ReportsBean.DataBean.UserlogBean> userlog=dataBean.getUserlog();
                 for (int i=0;i<userlog.size();i++)
                 {
-                    currentdate=userlog.get(i).getCurrentdate();
+                    currentdate=userlog.get(i).getUserIndate();
                     intime=userlog.get(i).getUserIntime();
                     outtime=userlog.get(i).getUserOuttime();
                     location=userlog.get(i).getSiteAddress();
                     shifthours=userlog.get(i).getHours();
                     list.add(new ReportData(currentdate,location,intime,outtime,shifthours));
                 }
-            
+                totalhours.setText("Total hrs:"+dataBean.getTotaldayhours());
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
                 break;
