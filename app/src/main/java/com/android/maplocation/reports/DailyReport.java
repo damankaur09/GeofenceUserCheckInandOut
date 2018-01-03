@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -150,14 +151,14 @@ public class DailyReport extends Fragment {
                 RecycleAdapter adapter=new RecycleAdapter(getActivity(),list);
                 recyclerView.setAdapter(adapter);
             case 400:
-                Toast.makeText(getActivity(), response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                Snackbar.make(recyclerView, response.getStatusMessage(), Snackbar.LENGTH_SHORT).show();
                 break;
         }
 
     }
 
     private void onError(String errorMessage) {
-        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, errorMessage, Snackbar.LENGTH_SHORT).show();
     }
 
 

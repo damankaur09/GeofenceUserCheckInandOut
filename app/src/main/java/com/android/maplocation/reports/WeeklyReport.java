@@ -3,6 +3,7 @@ package com.android.maplocation.reports;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,7 +76,8 @@ public class WeeklyReport extends Fragment {
         params.setUserId(SharedPreferencesHandler.getStringValues(getActivity(), getString(R.string.pref_user_id)));
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-        params.setWeeklyLog(String.valueOf(day));
+        //add static 7 for the week log
+        params.setWeeklyLog("7");
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final String formatted = dateFormat.format(cal.getTime());
@@ -132,12 +134,12 @@ public class WeeklyReport extends Fragment {
                 recyclerView.setAdapter(adapter);
                 break;
             case 400:
-                Toast.makeText(getActivity(), response.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                Snackbar.make(recyclerView, response.getStatusMessage(), Snackbar.LENGTH_SHORT).show();
                 break;
         }
     }
 
     private void onError(String errorMessage) {
-        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, errorMessage, Snackbar.LENGTH_SHORT).show();
     }
 }
