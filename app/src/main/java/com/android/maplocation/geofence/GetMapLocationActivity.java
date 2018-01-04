@@ -330,13 +330,15 @@ public class GetMapLocationActivity extends AppCompatActivity
 
     // Start location Updates
     private void startLocationUpdates() {
+
+        Log.i(TAG, "startLocationUpdates()");
+        locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(UPDATE_INTERVAL)
+                .setFastestInterval(FASTEST_INTERVAL);
         if (checkPermission()&&googleApiClient!=null&&googleApiClient.isConnected()) {
 
-            Log.i(TAG, "startLocationUpdates()");
-            locationRequest = LocationRequest.create()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(UPDATE_INTERVAL)
-                    .setFastestInterval(FASTEST_INTERVAL);
+
 
 
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
@@ -468,7 +470,7 @@ public class GetMapLocationActivity extends AppCompatActivity
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation()");
         if (checkPermission()) {
-            drawGeofence();
+           // drawGeofence();
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
                 Log.i(TAG, "LasKnown location. " +
@@ -591,7 +593,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-//                            drawGeofence();
+                           drawGeofence();
 
                         }
                     });
@@ -728,9 +730,7 @@ public class GetMapLocationActivity extends AppCompatActivity
                 if (checkPermission() ) {
 
                         startGeofence();
-                        getLastKnownLocation();
-
-
+                       // getLastKnownLocation();
 
                 }
 
