@@ -32,4 +32,5 @@
     <string name="title_activity_map">MapActivity</string>
     <string name="pref_user_id">pref_user_id</string>
     <string name="pref_is_login">isLogin</string>
+    <string name="pref_username">pref_user_name</string>
 </resources>

@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             case 200:
                 Toast.makeText(LoginActivity.this, response.getStatusMessage(), Toast.LENGTH_SHORT).show();
                 SharedPreferencesHandler.setStringValues(this, getString(R.string.pref_user_id), response.getBean().getUser_id());
+                SharedPreferencesHandler.setStringValues(this,"pref_user_name",response.getBean().getFirst_name());
                 SharedPreferencesHandler.setBooleanValues(this, getString(R.string.pref_is_login), true);
                 startActivity(new Intent(this, GetMapLocationActivity.class));
                 break;
